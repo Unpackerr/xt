@@ -1,0 +1,21 @@
+linters:
+  enable-all: true
+  disable:
+    # deprecated
+    - maligned
+    - scopelint
+    - interfacer
+    - golint
+    - exhaustivestruct
+    - nosnakecase
+    - structcheck
+    - deadcode
+    - varcheck
+    - ifshort
+    # unused
+    - nlreturn
+    - exhaustruct
+    - depguard
+run:
+  timeout: 3m
+

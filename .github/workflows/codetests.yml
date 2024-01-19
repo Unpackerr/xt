@@ -1,0 +1,23 @@
+name: test-and-lint
+on: push
+permissions:
+  contents: read
+jobs:
+  gotest:
+    strategy:
+      matrix:
+        os: [ubuntu, macos, windows]
+    runs-on: ${{ matrix.os }}-latest
+    steps:
+      - uses: actions/checkout@v4 
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+      - name: go-generate
+        run: go generate ./...
+      - name: go-test
+        run: go test ./pkg/...
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: 'v1.55'
