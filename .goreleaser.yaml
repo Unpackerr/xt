@@ -44,6 +44,10 @@ builds:
       - goos: windows
         goarch: arm
 
+universal_binaries:
+  - replace: true
+    ids:
+      - macos
 
 archives:
   - format: tar.gz
@@ -78,9 +82,6 @@ nfpms:
         key_file: "{{ .Env.GPG_SIGNING_KEY }}"
         type: origin
 
-universal_binaries:
-  - replace: true
-
 signs:
   - id: default
     artifacts: all
@@ -93,7 +94,7 @@ brews:
       owner: golift
       name: homebrew-mugs
       branch: master
-      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+      token: "{{ .Env.HOMEBREW_DEPLOY_KEY }}"
     commit_author:
       name: goreleaserbot
       email: bot@goreleaser.com

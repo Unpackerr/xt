@@ -29,10 +29,10 @@ jobs:
           ruby-version: '2.7'
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: "Install packagecloud gem"
-        run: gem install package_cloud
+        run: gem install --no-document package_cloud
       - uses: actions/setup-go@v5
         with:
-          go-version: '>=1.20.5'
+          go-version: stable
           cache: true
       - name: "Create GPG_SIGNING_KEY file"
         run: "echo '${{ secrets.GPG_SIGNING_KEY }}' > /tmp/key.gpg"
@@ -43,7 +43,25 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Use a fine grained PAT with Contents: R/W on golift/homebrew-mugs.
-          HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
-          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+          HOMEBREW_DEPLOY_KEY: ${{ secrets.HOMEBREW_DEPLOY_KEY }}
           GPG_SIGNING_KEY: /tmp/key.gpg
           GPG_SIGNING_KEY_ID: ${{ steps.import_gpg.outputs.keyid }}
+
+  deploy-packagecloud:
+    # description: "Uploads pre-built RPM and DEB packages to packagecloud.io/golift"
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: release
+    name: Deploy Release PackageCloud
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download release files
+        uses: actions/download-artifact@v4
+        with:
+          name: release
+      - uses: golift/upload-packagecloud@v1
+        with:
+          userrepo: golift/pkgs
+          apitoken: ${{ secrets.PACKAGECLOUD_TOKEN }}
+          packages: dist/
+          rpmdists: el/6
+          debdists: ubuntu/focal
