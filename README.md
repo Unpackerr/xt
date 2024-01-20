@@ -1,4 +1,4 @@
-# xt
+# eXtractor Tool
 
 Extract Everything. Decompress entire folders filled with archives.
 

@@ -1,0 +1,55 @@
+name: build-and-release
+on:
+  push:
+    branches:
+      - unstable
+      - main
+    tags:
+      - v*
+  pull_request:
+    branches:
+    - main
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: git fetch --force --tags
+      - name: Install RPM tooling
+        run: sudo apt-get install -y rpm
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_SIGNING_KEY }}
+      - name: "Setup Ruby for packagecloud uploads"
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+      - name: "Install packagecloud gem"
+        run: gem install package_cloud
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '>=1.20.5'
+          cache: true
+      - name: "Create GPG_SIGNING_KEY file"
+        run: "echo '${{ secrets.GPG_SIGNING_KEY }}' > /tmp/key.gpg"
+      - uses: goreleaser/goreleaser-action@v5
+        with:
+          version: latest
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Use a fine grained PAT with Contents: R/W on golift/homebrew-mugs.
+          HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
+          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+          GPG_SIGNING_KEY: /tmp/key.gpg
+          GPG_SIGNING_KEY_ID: ${{ steps.import_gpg.outputs.keyid }}

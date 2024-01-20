@@ -1,0 +1,115 @@
+version: 1
+
+before:
+  hooks:
+    # You may remove this if you don't use go modules.
+    - go mod tidy
+    # you may remove this if you don't need go generate
+    - go generate ./...
+
+builds:
+  # notice that we need a separated build for the MacOS binary only:
+  - env:
+      - CGO_ENABLED=0
+      - CGO_LDFLAGS=-mmacosx-version-min=10.8 
+      - CGO_CFLAGS=-mmacosx-version-min=10.8
+    id: macos
+    goos:
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w 
+      - -X "golift.io/version.Version={{.Version}}" 
+      - -X "golift.io/version.BuildDate={{.Date}}" 
+      - -X "golift.io/version.BuildUser={{.Env.USER}}"
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - freebsd
+    goarch:
+      - amd64
+      - arm
+      - arm64
+      - '386'
+    ldflags:
+      - -s -w 
+      - -X "golift.io/version.Version={{.Version}}" 
+      - -X "golift.io/version.BuildDate={{.Date}}" 
+      - -X "golift.io/version.BuildUser={{.Env.USER}}"
+    ignore:
+      - goos: windows
+        goarch: arm
+
+
+archives:
+  - format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+
+nfpms:
+  - id: xt-packages
+    vendor: Go Lift
+    homepage: https://unpackerr.com
+    maintainer: David Newhall II <captain at golift dot io>
+    description: eXtractor Tool - Recursively decompress archives
+    license: MIT
+    formats:
+      - deb
+      - rpm
+      - archlinux
+      - apk
+    bindir: /usr/bin
+    version_metadata: git
+    section: default
+    priority: extra
+    provides:
+      - xt
+    # signing
+    rpm:
+      signature:
+        key_file: "{{ .Env.GPG_SIGNING_KEY }}"
+    deb:
+      signature:
+        key_file: "{{ .Env.GPG_SIGNING_KEY }}"
+        type: origin
+
+universal_binaries:
+  - replace: true
+
+signs:
+  - id: default
+    artifacts: all
+
+brews:
+  - name: xt
+    # enable the line below only for testing locally
+    #skip_upload: true
+    repository:
+      owner: golift
+      name: homebrew-mugs
+      branch: master
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    commit_author:
+      name: goreleaserbot
+      email: bot@goreleaser.com
+    commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
+    folder: Formula
+    homepage: https://unpackerr.com/
+    description: "eXtractor Tool - Recursively decompress archives"
+    license: MIT
+    url_template: "https://github.com/Unpackerr/xt/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    test: assert_match "xt v#{version}", shell_output("#{bin}/xt -v 2>&1", 2)
+    install: bin.install "xt"
+
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
