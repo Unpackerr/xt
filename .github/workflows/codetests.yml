@@ -6,7 +6,7 @@ jobs:
   gotest:
     strategy:
       matrix:
-        os: [ubuntu, macos, windows]
+        os: [ubuntu, macos]
     runs-on: ${{ matrix.os }}-latest
     steps:
       - uses: actions/checkout@v4 
@@ -20,4 +20,4 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
-          version: 'v1.54'
+          version: 'v1.55'

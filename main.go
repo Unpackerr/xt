@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/Unpackerr/xt/pkg/xt"
+	"golift.io/version"
 )
 
 func main() {
@@ -30,8 +31,14 @@ func parseJobs() []*xt.Job {
 	}
 
 	output := flag.String("output", pwd, "Output directory, default is current directory")
+	printVer := flag.Bool("v", false, "Print application version and exit")
 
 	flag.Parse()
+
+	if *printVer {
+		log.Printf("xt v%s\n", version.Version)
+		os.Exit(0)
+	}
 
 	return []*xt.Job{{Output: *output, Paths: flag.Args()}}
 }

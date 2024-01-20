@@ -1,8 +1,11 @@
 module github.com/Unpackerr/xt
 
-go 1.21
+go 1.20
 
-require golift.io/xtractr v0.2.3-0.20240118083145-be8544c18974
+require (
+	golift.io/version v0.0.2
+	golift.io/xtractr v0.2.3-0.20240118083145-be8544c18974
+)
 
 require (
 	github.com/andybalholm/brotli v1.0.6 // indirect

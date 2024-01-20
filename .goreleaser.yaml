@@ -106,7 +106,6 @@ brews:
     test: assert_match "xt v#{version}", shell_output("#{bin}/xt -v 2>&1", 2)
     install: bin.install "xt"
 
-
 changelog:
   sort: asc
   filters:

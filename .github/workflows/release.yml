@@ -1,14 +1,8 @@
 name: build-and-release
 on:
   push:
-    branches:
-      - unstable
-      - main
     tags:
       - v*
-  pull_request:
-    branches:
-    - main
 
 permissions:
   contents: write
