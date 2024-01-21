@@ -15,27 +15,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - run: git fetch --force --tags
-      - name: Install RPM tooling
-        run: sudo apt-get install -y rpm
       - name: Import GPG key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v6
         with:
           gpg_private_key: ${{ secrets.GPG_SIGNING_KEY }}
-      - name: "Setup Ruby for packagecloud uploads"
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '2.7'
-          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-      - name: "Install packagecloud gem"
-        run: gem install --no-document package_cloud
+      - name: "Create GPG_SIGNING_KEY file"
+        run: "echo '${{ secrets.GPG_SIGNING_KEY }}' > /tmp/key.gpg"
       - uses: actions/setup-go@v5
         with:
           go-version: stable
           cache: true
-      - name: "Create GPG_SIGNING_KEY file"
-        run: "echo '${{ secrets.GPG_SIGNING_KEY }}' > /tmp/key.gpg"
       - uses: goreleaser/goreleaser-action@v5
         with:
           version: latest
