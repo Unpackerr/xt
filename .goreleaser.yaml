@@ -88,6 +88,8 @@ signs:
 
 brews:
   - name: xt
+    ids:
+      - macos
     # enable the line below only for testing locally
     #skip_upload: true
     repository:
