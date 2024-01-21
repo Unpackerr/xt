@@ -46,6 +46,7 @@ builds:
 
 universal_binaries:
   - replace: true
+    id: macub
     ids:
       - macos
 
@@ -89,7 +90,7 @@ signs:
 brews:
   - name: xt
     ids:
-      - macos
+      - macub
     # enable the line below only for testing locally
     #skip_upload: true
     repository:
