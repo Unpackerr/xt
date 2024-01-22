@@ -46,6 +46,8 @@ builds:
 
 universal_binaries:
   - replace: true
+    ids:
+      - macos
 
 archives:
   - format: tar.gz
