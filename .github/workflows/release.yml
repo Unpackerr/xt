@@ -33,7 +33,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Use a fine grained PAT with Contents: R/W on golift/homebrew-mugs.
-          HOMEBREW_DEPLOY_KEY: ${{ secrets.HOMEBREW_DEPLOY_KEY }}
+          HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
           GPG_SIGNING_KEY: /tmp/key.gpg
           GPG_SIGNING_KEY_ID: ${{ steps.import_gpg.outputs.keyid }}
       - uses: golift/upload-packagecloud@v1

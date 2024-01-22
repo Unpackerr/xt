@@ -94,7 +94,7 @@ brews:
       owner: golift
       name: homebrew-mugs
       branch: master
-      token: "{{ .Env.HOMEBREW_DEPLOY_KEY }}"
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     commit_author:
       name: goreleaserbot
       email: bot@goreleaser.com
