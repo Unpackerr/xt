@@ -13,7 +13,6 @@ builds:
       - CGO_ENABLED=0
       - CGO_LDFLAGS=-mmacosx-version-min=10.8 
       - CGO_CFLAGS=-mmacosx-version-min=10.8
-    id: macos
     goos:
       - darwin
     goarch:
@@ -46,9 +45,6 @@ builds:
 
 universal_binaries:
   - replace: true
-    id: macub
-    ids:
-      - macos
 
 archives:
   - format: tar.gz
@@ -89,8 +85,6 @@ signs:
 
 brews:
   - name: xt
-    ids:
-      - macub
     # enable the line below only for testing locally
     #skip_upload: true
     repository:
