@@ -1,11 +1,13 @@
+//nolint:forbidigo
 package main
 
 import (
-	"flag"
+	"fmt"
 	"log"
 	"os"
 
 	"github.com/Unpackerr/xt/pkg/xt"
+	flag "github.com/spf13/pflag"
 	"golift.io/version"
 )
 
@@ -14,8 +16,7 @@ func main() {
 
 	jobs := parseJobs()
 	if len(jobs) < 1 || len(jobs[0].Paths) < 1 {
-		log.Printf("If you pass a directory, this app will extract every archive in it.")
-		log.Fatalf("Usage: %s [-output <path>] <path> [paths...]", os.Args[0])
+		flag.Usage()
 	}
 
 	for i, job := range jobs {
@@ -30,13 +31,20 @@ func parseJobs() []*xt.Job {
 		pwd = "."
 	}
 
-	output := flag.String("output", pwd, "Output directory, default is current directory")
-	printVer := flag.Bool("v", false, "Print application version and exit")
+	output := flag.StringP("output", "o", pwd, "Output directory, default is current directory")
+	printVer := flag.BoolP("version", "v", false, "Print application version and exit")
+
+	flag.Usage = func() {
+		fmt.Println("If you pass a directory, this app will extract every archive in it.")
+		fmt.Printf("Usage: %s [-v] [--output <path>] <path> [paths...]\n", os.Args[0])
+		flag.PrintDefaults()
+		os.Exit(0)
+	}
 
 	flag.Parse()
 
 	if *printVer {
-		log.Printf("xt v%s\n", version.Version)
+		fmt.Printf("xt v%s\n", version.Version)
 		os.Exit(0)
 	}
 
