@@ -2,55 +2,52 @@ version: 1
 
 before:
   hooks:
-    # You may remove this if you don't use go modules.
     - go mod tidy
-    # you may remove this if you don't need go generate
     - go generate ./...
+    ## This creates MANUAL and MANUAL.html. The gzip then makes MANUAL.gz (a man page).
+    - go run github.com/davidnewhall/md2roff@v0.0.1 --manual xt --version "{{.Version}}" --date "{{.Date}}" MANUAL.md
+    - rm -f MANUAL.gz
+    - gzip -9 MANUAL
 
 builds:
-  # notice that we need a separated build for the MacOS binary only:
   - env:
       - CGO_ENABLED=0
-      - CGO_LDFLAGS=-mmacosx-version-min=10.8 
+      - CGO_LDFLAGS=-mmacosx-version-min=10.8
       - CGO_CFLAGS=-mmacosx-version-min=10.8
-    id: macos
-    goos:
-      - darwin
-    goarch:
-      - amd64
-      - arm64
-    ldflags:
-      - -s -w 
-      - -X "golift.io/version.Version={{.Version}}" 
-      - -X "golift.io/version.BuildDate={{.Date}}" 
-      - -X "golift.io/version.BuildUser={{.Env.USER}}"
-  - env:
-      - CGO_ENABLED=0
     goos:
       - linux
       - windows
       - freebsd
+      - darwin
     goarch:
       - amd64
       - arm
       - arm64
       - '386'
     ldflags:
-      - -s -w 
-      - -X "golift.io/version.Version={{.Version}}" 
-      - -X "golift.io/version.BuildDate={{.Date}}" 
+      - -s -w
+      - -X "golift.io/version.Version={{.Version}}"
+      - -X "golift.io/version.BuildDate={{.Date}}"
       - -X "golift.io/version.BuildUser={{.Env.USER}}"
     ignore:
       - goos: windows
         goarch: arm
+      - goos: darwin
+        goarch: arm
+      - goos: darwin
+        goarch: '386'
 
 universal_binaries:
   - replace: true
-    ids:
-      - macos
 
 archives:
   - format: tar.gz
+    wrap_in_directory: true
+    files:
+     - src: MANUAL.html
+       dst: xt-manual.html
+     - src: LICENSE
+       dst: LICENSE.txt
     format_overrides:
       - goos: windows
         format: zip
@@ -81,10 +78,16 @@ nfpms:
       signature:
         key_file: "{{ .Env.GPG_SIGNING_KEY }}"
         type: origin
+    contents:
+      - src: MANUAL.gz
+        dst: /usr/share/man/man1/xt.1.gz
+      - src: LICENSE
+        dst: /usr/share/doc/xt/LICENSE.txt
+      - src: MANUAL.md
+        dst: /usr/share/doc/xt/MANUAL.md
 
 signs:
-  - id: default
-    artifacts: all
+    - artifacts: all
 
 brews:
   - name: xt
