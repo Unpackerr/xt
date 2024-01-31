@@ -9,13 +9,8 @@ import (
 	"golift.io/xtractr"
 )
 
-type Job struct {
-	Paths  []string
-	Output string
-}
-
 func Extract(job *Job) {
-	archives := getArchives(job.Paths)
+	archives := job.getArchives()
 	if len(archives) == 0 {
 		log.Println("==> No archives found in:", job.Paths)
 	}
@@ -35,11 +30,11 @@ func Extract(job *Job) {
 			start := time.Now()
 
 			size, files, _, err := xtractr.ExtractFile(&xtractr.XFile{
-				FilePath:  fileName,   // Path to archive being extracted.
-				OutputDir: job.Output, // Folder to extract archive into.
-				FileMode:  0o644,      //nolint:gomnd // Write files with this mode.
-				DirMode:   0o755,      //nolint:gomnd // Write folders with this mode.
-				Password:  "",         // (RAR) Archive password. Blank for none.
+				FilePath:  fileName,      // Path to archive being extracted.
+				OutputDir: job.Output,    // Folder to extract archive into.
+				FileMode:  0o644,         //nolint:gomnd // Write files with this mode.
+				DirMode:   0o755,         //nolint:gomnd // Write folders with this mode.
+				Passwords: job.Passwords, // (RAR/7zip) Archive password(s).
 			})
 			if err != nil {
 				log.Printf("[ERROR] Archive: %s: %v", fileName, err)
@@ -53,10 +48,10 @@ func Extract(job *Job) {
 	}
 }
 
-func getArchives(paths []string) map[string][]string {
+func (j *Job) getArchives() map[string][]string {
 	archives := map[string][]string{}
 
-	for _, fileName := range paths {
+	for _, fileName := range j.Paths {
 		fileInfo, err := os.Stat(fileName)
 		if err != nil {
 			log.Println("[ERROR] Reading archive path:", err)
@@ -68,7 +63,12 @@ func getArchives(paths []string) map[string][]string {
 			continue
 		}
 
-		for k, v := range xtractr.FindCompressedFiles(xtractr.Filter{Path: fileName}) {
+		for k, v := range xtractr.FindCompressedFiles(xtractr.Filter{
+			Path:          fileName,
+			ExcludeSuffix: j.Exclude,
+			MaxDepth:      int(j.MaxDepth),
+			MinDepth:      int(j.MinDepth),
+		}) {
 			archives[k] = v
 		}
 	}
