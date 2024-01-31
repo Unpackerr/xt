@@ -1,3 +1,9 @@
+run:
+  timeout: 3m
+
+output:
+  sort-results: true
+
 linters:
   enable-all: true
   disable:
@@ -16,6 +22,16 @@ linters:
     - nlreturn
     - exhaustruct
     - depguard
-run:
-  timeout: 3m
+    - tagalign
 
+issues:
+  # disable the default limit so we see everything
+  max-same-issues: 0
+  max-issues-per-linter: 0
+  exclude-rules:
+    # Exclude some linters from testing files.
+    - linters:
+        - goconst
+        - wsl
+        - funlen
+      path: '.+_test.go'

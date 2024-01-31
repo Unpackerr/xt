@@ -15,6 +15,8 @@ func Extract(job *Job) {
 		log.Println("==> No archives found in:", job.Paths)
 	}
 
+	job.fixModes()
+
 	total := 0
 	count := 0
 
@@ -30,11 +32,11 @@ func Extract(job *Job) {
 			start := time.Now()
 
 			size, files, _, err := xtractr.ExtractFile(&xtractr.XFile{
-				FilePath:  fileName,      // Path to archive being extracted.
-				OutputDir: job.Output,    // Folder to extract archive into.
-				FileMode:  0o644,         //nolint:gomnd // Write files with this mode.
-				DirMode:   0o755,         //nolint:gomnd // Write folders with this mode.
-				Passwords: job.Passwords, // (RAR/7zip) Archive password(s).
+				FilePath:  fileName,            // Path to archive being extracted.
+				OutputDir: job.Output,          // Folder to extract archive into.
+				FileMode:  job.FileMode.Mode(), // Write files with this mode.
+				DirMode:   job.DirMode.Mode(),  // Write folders with this mode.
+				Passwords: job.Passwords,       // (RAR/7zip) Archive password(s).
 			})
 			if err != nil {
 				log.Printf("[ERROR] Archive: %s: %v", fileName, err)
@@ -63,13 +65,13 @@ func (j *Job) getArchives() map[string][]string {
 			continue
 		}
 
-		for k, v := range xtractr.FindCompressedFiles(xtractr.Filter{
+		for folder, fileList := range xtractr.FindCompressedFiles(xtractr.Filter{
 			Path:          fileName,
 			ExcludeSuffix: j.Exclude,
 			MaxDepth:      int(j.MaxDepth),
 			MinDepth:      int(j.MinDepth),
 		}) {
-			archives[k] = v
+			archives[folder] = fileList
 		}
 	}
 

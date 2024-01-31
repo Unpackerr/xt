@@ -59,6 +59,8 @@ Example TOML job file:
     exclude_suffix = ['.iso', '.gz']
     max_depth = 0
     min_depth = 1
+    file_mode = 644
+    dir_mode  = 755
 
 AUTHOR
 ---

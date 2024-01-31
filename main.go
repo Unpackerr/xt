@@ -11,7 +11,7 @@ import (
 	"golift.io/version"
 )
 
-func parseFlags(pwd string) (xt.Job, *flags) {
+func parseFlags(pwd string) (*xt.Job, *flags) {
 	flag.Usage = func() {
 		// XXX: Write more "help" info here.
 		fmt.Println("If you pass a directory, this app will extract every archive in it.")
@@ -19,7 +19,7 @@ func parseFlags(pwd string) (xt.Job, *flags) {
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
-	job := xt.Job{}
+	job := &xt.Job{}
 	flags := &flags{}
 
 	flag.BoolVarP(&flags.PrintVer, "version", "v", false, "Print application version and exit")
@@ -27,7 +27,7 @@ func parseFlags(pwd string) (xt.Job, *flags) {
 	flag.StringVarP(&job.Output, "output", "o", pwd, "Output directory, default is current directory")
 	flag.UintVarP(&job.MaxDepth, "max-depth", "d", 0, "Maximum folder depth to recursively search for archives.")
 	flag.UintVarP(&job.MinDepth, "min-depth", "m", 0, "Minimum folder depth to recursively search for archives.")
-	//flag.UintVarP(&job.Recurse, "recurse", "r", 0, "Extract archives inside archives, up to this depth.")
+	// flag.UintVarP(&job.Recurse, "recurse", "r", 0, "Extract archives inside archives, up to this depth.")
 	flag.StringSliceVarP(&job.Passwords, "password", "P", nil, "Attempt these passwords for rar and 7zip archives.")
 	flag.StringSliceVarP(&flags.JobFiles, "job-file", "j", nil, "Read additional extraction jobs from these files.")
 	// Preserve paths?
@@ -77,7 +77,7 @@ func main() {
 
 	// Extract the jobs.
 	for i, job := range jobs {
-		log.Printf("Starting Job %d of %d with %d paths, output: %s", i+1, len(jobs), len(job.Paths), job.Output)
-		xt.Extract(&job)
+		log.Printf("Starting Job %d of %d with %s", i+1, len(jobs), job)
+		xt.Extract(job)
 	}
 }
