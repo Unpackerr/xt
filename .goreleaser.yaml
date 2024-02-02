@@ -72,7 +72,6 @@ nfpms:
     priority: extra
     provides:
       - xt
-    signing
     rpm:
       signature:
         key_file: "{{ .Env.GPG_SIGNING_KEY }}"

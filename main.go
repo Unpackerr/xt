@@ -56,7 +56,7 @@ func main() {
 
 	// Get 1 job and other flag info from cli args.
 	cliJob, flags := parseFlags(pwd)
-	printVer(flags.PrintVer)
+	flags.printVer()
 
 	// Read in jobs from 1 or more job files.
 	jobs, err := xt.ParseJobs(flags.JobFiles)
@@ -81,8 +81,10 @@ func main() {
 	}
 }
 
-func printVer(print bool) {
-	if !print {
+// printVer prints the version and exits.
+// Only if the user passed -v or --version.
+func (f *flags) printVer() {
+	if !f.PrintVer {
 		return
 	}
 
