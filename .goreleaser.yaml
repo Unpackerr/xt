@@ -29,6 +29,8 @@ builds:
       - -X "golift.io/version.Version={{.Version}}"
       - -X "golift.io/version.BuildDate={{.Date}}"
       - -X "golift.io/version.BuildUser={{.Env.USER}}"
+      - -X "golift.io/version.Revision={{.Env.REVISION}}"
+      - -X "golift.io/version.Branch={{.Branch}} ({{.ShortCommit}})"
     ignore:
       - goos: windows
         goarch: arm
@@ -70,7 +72,7 @@ nfpms:
     priority: extra
     provides:
       - xt
-    # signing
+    signing
     rpm:
       signature:
         key_file: "{{ .Env.GPG_SIGNING_KEY }}"

@@ -9,6 +9,7 @@ import (
 	"github.com/Unpackerr/xt/pkg/xt"
 	flag "github.com/spf13/pflag"
 	"golift.io/version"
+	"golift.io/xtractr"
 )
 
 func parseFlags(pwd string) (*xt.Job, *flags) {
@@ -27,12 +28,13 @@ func parseFlags(pwd string) (*xt.Job, *flags) {
 	flag.StringVarP(&job.Output, "output", "o", pwd, "Output directory, default is current directory")
 	flag.UintVarP(&job.MaxDepth, "max-depth", "d", 0, "Maximum folder depth to recursively search for archives.")
 	flag.UintVarP(&job.MinDepth, "min-depth", "m", 0, "Minimum folder depth to recursively search for archives.")
-	// flag.UintVarP(&job.Recurse, "recurse", "r", 0, "Extract archives inside archives, up to this depth.")
+	flag.StringSliceVarP(&job.Include, "extension", "e", nil, "Only extract files with these extensions.")
 	flag.StringSliceVarP(&job.Passwords, "password", "P", nil, "Attempt these passwords for rar and 7zip archives.")
 	flag.StringSliceVarP(&flags.JobFiles, "job-file", "j", nil, "Read additional extraction jobs from these files.")
+	flag.Parse()
 	// Preserve paths?
 	// flag.BoolVarP(&job.Preserve, "preserve-paths", "", false, "Recreate directory hierarchy while extracting.")
-	flag.Parse()
+	// flag.UintVarP(&job.Recurse, "recurse", "r", 0, "Extract archives inside archives, up to this depth.")
 
 	job.Paths = flag.Args()
 
@@ -54,10 +56,7 @@ func main() {
 
 	// Get 1 job and other flag info from cli args.
 	cliJob, flags := parseFlags(pwd)
-	if flags.PrintVer {
-		fmt.Printf("xt v%s-%s (%s)\n", version.Version, version.Revision, version.Branch)
-		os.Exit(0)
-	}
+	printVer(flags.PrintVer)
 
 	// Read in jobs from 1 or more job files.
 	jobs, err := xt.ParseJobs(flags.JobFiles)
@@ -80,4 +79,19 @@ func main() {
 		log.Printf("Starting Job %d of %d with %s", i+1, len(jobs), job)
 		xt.Extract(job)
 	}
+}
+
+func printVer(print bool) {
+	if !print {
+		return
+	}
+
+	fmt.Printf("xt v%s-%s (%s)\n", version.Version, version.Revision, version.Branch)
+	fmt.Println(" - Supported Extensions:")
+
+	for _, ext := range xtractr.SupportedExtensions() {
+		fmt.Println("  ", ext)
+	}
+
+	os.Exit(0)
 }

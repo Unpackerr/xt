@@ -22,6 +22,8 @@ jobs:
           gpg_private_key: ${{ secrets.GPG_SIGNING_KEY }}
       - name: "Create GPG_SIGNING_KEY file"
         run: "echo '${{ secrets.GPG_SIGNING_KEY }}' > /tmp/key.gpg"
+      - name: "Save Iteration in Revision"
+        run: "REVISION=(git rev-list --count --all || echo 0) > $GITHUB_ENV"
       - uses: actions/setup-go@v5
         with:
           go-version: stable
