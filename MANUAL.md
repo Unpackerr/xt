@@ -4,7 +4,8 @@ xt(1) -- eXtractor Tool - Recursively decompress archives
 SYNOPSIS
 ---
 
-`xt [options] [path [path] [path] ...]`
+`xt [options] [path [path] [path] ...]`  
+`xt --job-file /tmp/job1 -j /tmp/job2`\
 
 DESCRIPTION
 ---
@@ -17,39 +18,47 @@ DESCRIPTION
 OPTIONS
 ---
 
-`xt [-o </path>] [-d <#>] [-m <#>] [-p <p4ss,words>] [paths]`
+`xt [-o </dir>] [-d <#>] [-m <#>] [-e <.ext>] [-p <p4ss,words>] [paths]`
 
-    -o, --output </path>
-        Provide a file system path where content should be written.
-        The default output path is the current working directory.
+-o _directory_, --output _directory_  
+    Provide a file system _directory_ where content is written.
+    The default output _directory_ is the current working directory.
 
-    -d, --max-depth <child count>
-        This option limits how deep into the file system xt recurses.
-        The default is (0) unlimited. Setting to 1 disables recursion.
+-d _count_, --max-depth _count_  
+    This option limits how deep into the file system xt recurses.
+    The default is (0) unlimited. Setting to 1 disables recursion.
 
-    -m, --min-depth <child count>
-        This option determines if archives should only be found deeper
-        into the file system. The default is (0) root. Archives are only
-        extracted from <child count> sub directories deep or deeper.
+-m _count_, --min-depth _count_  
+    This option determines if archives should only be found deeper
+    into the file system. The default is (0) root. Archives are only
+    extracted from _count_ sub directories deep or deeper.
 
-    -P, --password <p4ss word>,<pass w0rd>
-        Provided password(s) are attempted against extraction of encrypted
-        rar and/or 7zip archives. The -p option may be provided many times.
+-P _password_, --password _password_  
+    Provided _passwords_ are attempted against extraction of encrypted
+    rar and/or 7zip archives. The `-p` option may be provided many times.
 
-    -j, --job-file <job file>
-        The options above create a single job. If you want more control,
-        you may provide one or more job files. Each file may define the
-        input, output, depths and passwords, etc. Acceptable formats are
-        xml, json, toml and yaml. TOML is the default. See JOB FILES below.
+-e _.ext_, --extension _.ext_  
+    Only extract archives with these extensions. Include the leading dot.
+    The `-e` option may be provided many times. 
+    Use `-v` for supported extensions. <- Your input must match the
+    supported extensions. Unknown extensions are still ignored.
 
-    -v, --version
-        Display version and exit.
+-j _file_, --job-file _file_  
+    The options above create a single job. If you want more control,
+    you may provide one or more job files. Each _file_ may define the
+    input, output, depths and passwords, etc. Acceptable formats are
+    xml, json, toml and yaml. TOML is the default. See JOB FILES below.
 
-    -h, --help
-        Display usage and exit.
+-v, --version  
+    Display version and exit.
+
+-h, --help  
+    Display usage and exit.
 
 JOB FILES
 ---
+
+If  `include_suffix` is provided `exclude_suffix` is ignored.
 
 Example TOML job file:
 
@@ -57,6 +66,7 @@ Example TOML job file:
     output    = '.'
     passwords = [ 'password1', '''password"With'Specials!''', 'pass3']
     exclude_suffix = ['.iso', '.gz']
+    include_suffix = ['.zip', '.rar', '.r00']
     max_depth = 0
     min_depth = 1
     file_mode = 644

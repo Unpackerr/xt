@@ -12,6 +12,7 @@ type Job struct {
 	Output    string   `json:"output" yaml:"output" xml:"output" toml:"output"`
 	Passwords []string `json:"passwords" yaml:"passwords" xml:"password" toml:"passwords"`
 	Exclude   []string `json:"excludeSuffix" yaml:"excludeSuffix" xml:"exclude_suffix" toml:"exclude_suffix"`
+	Include   []string `json:"includeSuffix" yaml:"includeSuffix" xml:"include_suffix" toml:"include_suffix"`
 	MaxDepth  uint     `json:"maxDepth" yaml:"maxDepth" xml:"max_depth" toml:"max_depth"`
 	MinDepth  uint     `json:"minDepth" yaml:"minDepth" xml:"min_depth" toml:"min_depth"`
 	DirMode   FileMode `json:"dirMode" yaml:"dirMode" xml:"dir_mode" toml:"dir_mode"`

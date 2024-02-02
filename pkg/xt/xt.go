@@ -65,9 +65,14 @@ func (j *Job) getArchives() map[string][]string {
 			continue
 		}
 
+		exclude := j.Exclude
+		if len(j.Include) > 0 {
+			exclude = xtractr.AllExcept(j.Include...)
+		}
+
 		for folder, fileList := range xtractr.FindCompressedFiles(xtractr.Filter{
 			Path:          fileName,
-			ExcludeSuffix: j.Exclude,
+			ExcludeSuffix: exclude,
 			MaxDepth:      int(j.MaxDepth),
 			MinDepth:      int(j.MinDepth),
 		}) {
