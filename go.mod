@@ -18,7 +18,7 @@ require (
 )
 
 require (
-	github.com/BurntSushi/toml v1.3.0 // indirect
+	github.com/BurntSushi/toml v1.4.0 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/bodgit/plumbing v1.3.0 // indirect
 	github.com/bodgit/sevenzip v1.4.5 // indirect
@@ -32,6 +32,6 @@ require (
 	github.com/ulikunitz/xz v0.5.11 // indirect
 	go4.org v0.0.0-20230225012048-214862532bf5 // indirect
 	golang.org/x/text v0.14.0 // indirect
-	golift.io/cnfgfile v0.0.0-20230531075023-f880041cc0a0
+	golift.io/cnfgfile v0.0.0-20240713024420-a5436d84eb48
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

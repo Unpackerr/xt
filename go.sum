@@ -18,6 +18,8 @@ dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/toml v1.3.0 h1:Ws8e5YmnrGEHzZEzg0YvK/7COGYtTC5PbaH9oSSbgfA=
 github.com/BurntSushi/toml v1.3.0/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbicEuybxQ=
+github.com/BurntSushi/toml v1.4.0 h1:kuoIxZQy2WRRk1pttg9asf+WVv6tWQuBNVmK8+nqPr0=
+github.com/BurntSushi/toml v1.4.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/andybalholm/brotli v1.1.0 h1:eLKJA0d02Lf0mVpIDgYnqXcUn0GqVmEFny3VuID1U3M=
 github.com/andybalholm/brotli v1.1.0/go.mod h1:sms7XGricyQI9K10gOSf56VKKWS4oLer58Q+mhRPtnY=
@@ -244,6 +246,8 @@ golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543/go.mod h1:I/5z698sn9Ka8T
 golift.io/cnfg v0.2.2 h1:m60kGVZQLuzAx939fLX8wSEKk2fpZdX6+HOjdYuUfCw=
 golift.io/cnfgfile v0.0.0-20230531075023-f880041cc0a0 h1:u14MTHfTGx7kLX2b3wFbaESrIm3YqL//HM92XA6wzH4=
 golift.io/cnfgfile v0.0.0-20230531075023-f880041cc0a0/go.mod h1:dVC3N+72/nHNlBv3cwXb4FQTxMAor+JlNClAldwACkY=
+golift.io/cnfgfile v0.0.0-20240713024420-a5436d84eb48 h1:c7cJWRr0cUnFHKtq072esKzhQHKlFA5YRY/hPzQrdko=
+golift.io/cnfgfile v0.0.0-20240713024420-a5436d84eb48/go.mod h1:zHm9o8SkZ6Mm5DfGahsrEJPsogyR0qItP59s5lJ98/I=
 golift.io/version v0.0.2 h1:i0gXRuSDHKs4O0sVDUg4+vNIuOxYoXhaxspftu2FRTE=
 golift.io/version v0.0.2/go.mod h1:76aHNz8/Pm7CbuxIsDi97jABL5Zui3f2uZxDm4vB6hU=
 golift.io/xtractr v0.2.3-0.20240202194230-2edf9aff9619 h1:rLCt2Q6zTh3yvs3mw0tujq7FiYq+Q1lc6DDNSV5U7lk=
