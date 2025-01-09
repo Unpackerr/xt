@@ -3,7 +3,7 @@ module github.com/Unpackerr/xt
 go 1.20
 
 require (
-	github.com/spf13/pflag v1.0.6-0.20210604193023-d5e0c0615ace
+	github.com/spf13/pflag v1.0.6-0.20250109003754-5ca813443bd2
 	golift.io/version v0.0.2
 	golift.io/xtractr v0.2.3-0.20240202194230-2edf9aff9619
 )
