@@ -17,6 +17,7 @@ type Job struct {
 	MinDepth  uint     `json:"minDepth" yaml:"minDepth" xml:"min_depth" toml:"min_depth"`
 	DirMode   FileMode `json:"dirMode" yaml:"dirMode" xml:"dir_mode" toml:"dir_mode"`
 	FileMode  FileMode `json:"fileMode" yaml:"fileMode" xml:"file_mode" toml:"file_mode"`
+	Preserve  bool     `json:"preservePaths" yaml:"preservePaths" xml:"preserve_paths" toml:"preserve_paths"`
 }
 
 // ParseJobs checks for and reads more jobs in from 0 or more job files.

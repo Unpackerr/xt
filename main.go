@@ -31,9 +31,8 @@ func parseFlags(pwd string) (*xt.Job, *flags) {
 	flag.StringSliceVarP(&job.Include, "extension", "e", nil, "Only extract files with these extensions.")
 	flag.StringSliceVarP(&job.Passwords, "password", "P", nil, "Attempt these passwords for rar and 7zip archives.")
 	flag.StringSliceVarP(&flags.JobFiles, "job-file", "j", nil, "Read additional extraction jobs from these files.")
+	flag.BoolVarP(&job.Preserve, "preserve-paths", "p", false, "Recreate directory hierarchy while extracting.")
 	flag.Parse()
-	// Preserve paths?
-	// flag.BoolVarP(&job.Preserve, "preserve-paths", "", false, "Recreate directory hierarchy while extracting.")
 	// flag.UintVarP(&job.Recurse, "recurse", "r", 0, "Extract archives inside archives, up to this depth.")
 
 	job.Paths = flag.Args()

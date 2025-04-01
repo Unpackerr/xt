@@ -18,7 +18,7 @@ DESCRIPTION
 OPTIONS
 ---
 
-`xt [-o </dir>] [-d <#>] [-m <#>] [-e <.ext>] [-p <p4ss,words>] [paths]`
+`xt [-o </dir>] [-d <#>] [-m <#>] [-e <.ext>] [-P <p4ss,words>] [-p] [paths]`
 
 -o _directory_, --output _directory_  
     Provide a file system _directory_ where content is written.
@@ -49,6 +49,10 @@ OPTIONS
     input, output, depths and passwords, etc. Acceptable formats are
     xml, json, toml and yaml. TOML is the default. See JOB FILES below.
 
+-p, --preserve-paths
+    This option determines if the archives will be extracted to their
+    parent folder. Using this flag will override the --output option.
+
 -v, --version  
     Display version and exit.
 
@@ -71,6 +75,7 @@ Example TOML job file:
     min_depth = 1
     file_mode = 644
     dir_mode  = 755
+    preserve_paths = false
 
 AUTHOR
 ---

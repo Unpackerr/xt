@@ -3,6 +3,7 @@ package xt
 import (
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -31,13 +32,21 @@ func Extract(job *Job) {
 
 			start := time.Now()
 
-			size, files, _, err := xtractr.ExtractFile(&xtractr.XFile{
+			xFile := &xtractr.XFile{
 				FilePath:  fileName,            // Path to archive being extracted.
 				OutputDir: job.Output,          // Folder to extract archive into.
 				FileMode:  job.FileMode.Mode(), // Write files with this mode.
 				DirMode:   job.DirMode.Mode(),  // Write folders with this mode.
 				Passwords: job.Passwords,       // (RAR/7zip) Archive password(s).
-			})
+			}
+
+			// If preserving the file hierarchy, set the output directory to the
+			// folder of the archive being extracted.
+			if job.Preserve {
+				xFile.OutputDir = filepath.Dir(fileName)
+			}
+
+			size, files, _, err := xtractr.ExtractFile(xFile)
 			if err != nil {
 				log.Printf("[ERROR] Archive: %s: %v", fileName, err)
 				continue
