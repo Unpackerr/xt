@@ -39,21 +39,6 @@ func ParseJobs(jobFiles []string) ([]*Job, error) {
 	return jobs, nil
 }
 
-func (j *Job) fixModes() {
-	const (
-		defaultFileMode = 0o644
-		defaultDirMode  = 0o755
-	)
-
-	if j.DirMode == 0 {
-		j.DirMode = defaultDirMode
-	}
-
-	if j.FileMode == 0 {
-		j.FileMode = defaultFileMode
-	}
-}
-
 func (j *Job) String() string {
 	j.fixModes()
 
@@ -76,4 +61,19 @@ func (j *Job) Debugf(format string, vars ...any) {
 // Printf wraps log.Printf.
 func (j *Job) Printf(format string, vars ...any) {
 	log.Printf(format, vars...)
+}
+
+func (j *Job) fixModes() {
+	const (
+		defaultFileMode = 0o644
+		defaultDirMode  = 0o755
+	)
+
+	if j.DirMode == 0 {
+		j.DirMode = defaultDirMode
+	}
+
+	if j.FileMode == 0 {
+		j.FileMode = defaultFileMode
+	}
 }
