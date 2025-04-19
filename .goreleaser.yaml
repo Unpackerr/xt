@@ -1,11 +1,11 @@
-version: 1
+version: 2
 
 before:
   hooks:
     - go mod tidy
     - go generate ./...
     ## This creates MANUAL and MANUAL.html. The gzip then makes MANUAL.gz (a man page).
-    - go run github.com/davidnewhall/md2roff@v0.0.1 --manual xt --version "{{.Version}}" --date "{{.Date}}" MANUAL.md
+    - go run github.com/davidnewhall/md2roff@v0.0.1 --manual xt --version "{{.Version}}-{{.Env.REVISION}}" --date "{{.Date}}" MANUAL.md
     - rm -f MANUAL.gz
     - gzip -9 MANUAL
 
@@ -30,7 +30,7 @@ builds:
       - -X "golift.io/version.BuildDate={{.Date}}"
       - -X "golift.io/version.BuildUser={{.Env.USER}}"
       - -X "golift.io/version.Revision={{.Env.REVISION}}"
-      - -X "golift.io/version.Branch={{.Branch}} ({{.ShortCommit}})"
+      - -X "golift.io/version.Branch={{.ShortCommit}} [{{.Branch}}]"
     ignore:
       - goos: windows
         goarch: arm
@@ -43,7 +43,7 @@ universal_binaries:
   - replace: true
 
 archives:
-  - format: tar.gz
+  - formats: ['tar.gz']
     wrap_in_directory: true
     files:
      - src: MANUAL.html
@@ -52,7 +52,7 @@ archives:
        dst: LICENSE.txt
     format_overrides:
       - goos: windows
-        format: zip
+        formats: ['zip']
 
 nfpms:
   - id: xt-packages
@@ -103,7 +103,7 @@ brews:
       name: goreleaserbot
       email: bot@goreleaser.com
     commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
-    folder: Formula
+    directory: Formula
     homepage: https://unpackerr.com/
     description: "eXtractor Tool - Recursively decompress archives"
     license: MIT

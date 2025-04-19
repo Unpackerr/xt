@@ -1,3 +1,4 @@
+// Package xt provides the interface to extract archive files based on job parameters.
 package xt
 
 import (
@@ -10,6 +11,7 @@ import (
 	"golift.io/xtractr"
 )
 
+// Extract runs a job immediately.
 func Extract(job *Job) {
 	archives := job.getArchives()
 	if len(archives) == 0 {
@@ -30,31 +32,37 @@ func Extract(job *Job) {
 			count++
 			log.Printf("==> Extracting Archive (%d/%d): %s", count, total, fileName)
 
-			start := time.Now()
-
-			xFile := &xtractr.XFile{
-				FilePath:  fileName,            // Path to archive being extracted.
-				OutputDir: job.Output,          // Folder to extract archive into.
-				FileMode:  job.FileMode.Mode(), // Write files with this mode.
-				DirMode:   job.DirMode.Mode(),  // Write folders with this mode.
-				Passwords: job.Passwords,       // (RAR/7zip) Archive password(s).
+			file := &xtractr.XFile{
+				FilePath:   fileName,            // Path to archive being extracted.
+				OutputDir:  job.Output,          // Folder to extract archive into.
+				FileMode:   job.FileMode.Mode(), // Write files with this mode.
+				DirMode:    job.DirMode.Mode(),  // Write folders with this mode.
+				Passwords:  job.Passwords,       // (RAR/7zip) Archive password(s).
+				SquashRoot: job.SquashRoot,      // Remove single root folder?
 			}
+
+			file.SetLogger(job)
+
+			start := time.Now()
 
 			// If preserving the file hierarchy, set the output directory to the
 			// folder of the archive being extracted.
 			if job.Preserve {
-				xFile.OutputDir = filepath.Dir(fileName)
+				file.OutputDir = filepath.Dir(fileName)
 			}
 
-			size, files, _, err := xtractr.ExtractFile(xFile)
+			size, files, _, err := xtractr.ExtractFile(file)
 			if err != nil {
 				log.Printf("[ERROR] Archive: %s: %v", fileName, err)
 				continue
 			}
 
-			elapsed := time.Since(start).Round(time.Millisecond)
-			log.Printf("==> Extracted Archive %s in %v: bytes: %d, files: %d", fileName, elapsed, size, len(files))
-			log.Printf("==> Files:\n - %s", strings.Join(files, "\n - "))
+			log.Printf("==> Extracted Archive %s in %v: bytes: %d, files: %d",
+				fileName, time.Since(start).Round(time.Millisecond), size, len(files))
+
+			if len(files) > 0 {
+				log.Printf("==> Files:\n - %s", strings.Join(files, "\n - "))
+			}
 		}
 	}
 }

@@ -24,6 +24,11 @@ OPTIONS
     Provide a file system _directory_ where content is written.
     The default output _directory_ is the current working directory.
 
+-S, --squash-root
+    If an archive contains only a single folder in the root directory,
+    then the contents of that folder are moved into the output folder.
+    The now-empty original root folder is deleted.
+
 -d _count_, --max-depth _count_  
     This option limits how deep into the file system xt recurses.
     The default is (0) unlimited. Setting to 1 disables recursion.
@@ -52,6 +57,9 @@ OPTIONS
 -p, --preserve-paths
     This option determines if the archives will be extracted to their
     parent folder. Using this flag will override the --output option.
+
+-D, --debug
+    Enable debug output.
 
 -v, --version  
     Display version and exit.
