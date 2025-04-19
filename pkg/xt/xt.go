@@ -49,7 +49,8 @@ func Extract(job *Job) {
 		}
 	}
 
-	log.Printf("==> Done.\n==> Extracted %d archives; wrote %d bytes into %d files in %v",
+	log.Printf("==> Done.")
+	log.Printf("==> Extracted %d archives; wrote %d bytes into %d files in %v",
 		total, size, fCount, time.Since(start).Round(time.Millisecond))
 }
 
