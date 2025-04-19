@@ -2,6 +2,7 @@
 package xt
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -20,31 +21,31 @@ func Extract(job *Job) {
 
 	job.fixModes()
 
-	total := 0
+	total := archives.Count()
 	count := 0
 	size := int64(0)
 	fCount := 0
 	start := time.Now()
 
-	for _, files := range archives {
-		total += len(files)
-	}
-
 	for folder, files := range archives {
-		count++
 		for _, archiveName := range files {
+			count++
 			log.Printf("==> Extracting Archive (%d/%d): %s", count, total, archiveName)
 
-			fSize, files, duration := job.processArchive(folder, archiveName)
-			size += fSize
-			fCount += len(files)
-
-			log.Printf("==> Extracted Archive %s in %v: bytes: %d, files: %d",
-				archiveName, duration.Round(time.Millisecond), size, len(files))
+			fSize, files, duration, err := job.processArchive(folder, archiveName)
+			if err != nil {
+				log.Printf("[ERROR] Extracting: %v", err)
+			} else {
+				log.Printf("==> Extracted Archive %s in %v: bytes: %d, files: %d",
+					archiveName, duration.Round(time.Millisecond), fSize, len(files))
+			}
 
 			if len(files) > 0 {
 				log.Printf("==> Files:\n - %s", strings.Join(files, "\n - "))
 			}
+
+			size += fSize
+			fCount += len(files)
 		}
 	}
 
@@ -52,7 +53,7 @@ func Extract(job *Job) {
 		total, fCount, size, time.Since(start).Round(time.Millisecond))
 }
 
-func (j *Job) processArchive(folder, archiveName string) (int64, []string, time.Duration) {
+func (j *Job) processArchive(folder, archiveName string) (int64, []string, time.Duration, error) {
 	file := &xtractr.XFile{
 		FilePath:   archiveName,       // Path to archive being extracted.
 		OutputDir:  j.Output,          // Folder to extract archive into.
@@ -75,13 +76,13 @@ func (j *Job) processArchive(folder, archiveName string) (int64, []string, time.
 
 	size, files, _, err := xtractr.ExtractFile(file)
 	if err != nil {
-		log.Printf("[ERROR] Archive: %s: %v", archiveName, err)
+		return size, files, time.Since(start), fmt.Errorf("archive: %s: %w", archiveName, err)
 	}
 
-	return size, files, time.Since(start)
+	return size, files, time.Since(start), nil
 }
 
-func (j *Job) getArchives() map[string][]string {
+func (j *Job) getArchives() xtractr.ArchiveList {
 	archives := map[string][]string{}
 
 	for _, fileName := range j.Paths {
