@@ -12,8 +12,10 @@ DESCRIPTION
 
 *   This application recursively extracts compressed archives.
 *   Provide directories to search or provide files to extract.
-*   Supports ZIP, RAR, GZIP, BZIP2, TAR, TGZ, TBZ2, 7ZIP, ISO9660
-*   ie. *.zip *.rar *.r00 *.gz *.bz2 *.tar *.tgz *.tbz2 *.7z *.iso
+*   Supports: ZIP, RAR, GZIP, BZIP2, TAR, TGZ, TBZ2, 7ZIP, ISO9660
+*   Supports: Z, AR, BR, CPIO, DEB, LZ/4, LZIP, LZMA2, S2, SNAPPY
+*   Supports: RPM, SZ, TLZ, TXZ, ZLIB, ZSTD, BROTLI, ZZ
+*   ie: *.zip *.rar *.r00 *.gz *.bz2 *.tar *.tgz *.tbz2 *.7z *.iso (and others)
 
 OPTIONS
 ---
@@ -58,6 +60,9 @@ OPTIONS
     This option determines if the archives will be extracted to their
     parent folder. Using this flag will override the --output option.
 
+-V, --verbose
+    Verbose logging prints the extracted file paths.
+
 -D, --debug
     Enable debug output.
 
@@ -83,6 +88,8 @@ Example TOML job file:
     min_depth = 1
     file_mode = 644
     dir_mode  = 755
+    verbose   = false
+    debug     = false
     preserve_paths = false
 
 AUTHOR

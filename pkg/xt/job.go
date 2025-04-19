@@ -21,6 +21,7 @@ type Job struct {
 	SquashRoot bool     `json:"squashRoot"    toml:"squash_root"    xml:"squash_root"    yaml:"squashRoot"`
 	DebugLog   bool     `json:"debugLog"      toml:"debug_log"      xml:"debug_log"      yaml:"debugLog"`
 	Preserve   bool     `json:"preservePaths" toml:"preserve_paths" xml:"preserve_paths" yaml:"preservePaths"`
+	Verbose    bool     `json:"verbose"       toml:"verbose"        xml:"verbose"        yaml:"verbose"`
 }
 
 // ParseJobs checks for and reads more jobs in from 0 or more job files.
@@ -48,8 +49,8 @@ func (j *Job) String() string {
 		sSfx = "s"
 	}
 
-	return fmt.Sprintf("%d path%s, f/d-mode:%s/%s, min/max-depth: %d/%d output: %s",
-		len(j.Paths), sSfx, j.FileMode, j.DirMode, j.MinDepth, j.MaxDepth, j.Output)
+	return fmt.Sprintf("%d path%s, f/d-mode:%s/%s, min/max-depth: %d/%d, preserve/squash: %v/%v output: %s",
+		len(j.Paths), sSfx, j.FileMode, j.DirMode, j.MinDepth, j.MaxDepth, j.Preserve, j.SquashRoot, j.Output)
 }
 
 // Debugf prints a log message if debug is enabled.
