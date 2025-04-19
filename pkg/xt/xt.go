@@ -2,6 +2,7 @@
 package xt
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -20,54 +21,69 @@ func Extract(job *Job) {
 
 	job.fixModes()
 
-	total := 0
+	total := archives.Count()
 	count := 0
+	size := int64(0)
+	fCount := 0
+	start := time.Now()
 
-	for _, files := range archives {
-		total += len(files)
-	}
-
-	for _, files := range archives {
-		for _, fileName := range files {
+	for folder, files := range archives {
+		for _, archive := range files {
 			count++
-			log.Printf("==> Extracting Archive (%d/%d): %s", count, total, fileName)
+			log.Printf("==> Extracting Archive (%d/%d): %s", count, total, archive)
 
-			file := &xtractr.XFile{
-				FilePath:   fileName,            // Path to archive being extracted.
-				OutputDir:  job.Output,          // Folder to extract archive into.
-				FileMode:   job.FileMode.Mode(), // Write files with this mode.
-				DirMode:    job.DirMode.Mode(),  // Write folders with this mode.
-				Passwords:  job.Passwords,       // (RAR/7zip) Archive password(s).
-				SquashRoot: job.SquashRoot,      // Remove single root folder?
-			}
-
-			file.SetLogger(job)
-
-			start := time.Now()
-
-			// If preserving the file hierarchy, set the output directory to the
-			// folder of the archive being extracted.
-			if job.Preserve {
-				file.OutputDir = filepath.Dir(fileName)
-			}
-
-			size, files, _, err := xtractr.ExtractFile(file)
+			output, fSize, files, duration, err := job.processArchive(folder, archive)
 			if err != nil {
-				log.Printf("[ERROR] Archive: %s: %v", fileName, err)
-				continue
+				log.Printf("[ERROR] Extracting: %v", err)
+			} else {
+				log.Printf("==> Extracted Archive %s to %s in %v: bytes: %d, files: %d",
+					archive, output, duration.Round(time.Millisecond), fSize, len(files))
 			}
 
-			log.Printf("==> Extracted Archive %s in %v: bytes: %d, files: %d",
-				fileName, time.Since(start).Round(time.Millisecond), size, len(files))
-
-			if len(files) > 0 {
+			if len(files) > 0 && job.Verbose {
 				log.Printf("==> Files:\n - %s", strings.Join(files, "\n - "))
 			}
+
+			size += fSize
+			fCount += len(files)
 		}
 	}
+
+	log.Printf("==> Done.")
+	log.Printf("==> Extracted %d archives; wrote %d bytes into %d files in %v",
+		total, size, fCount, time.Since(start).Round(time.Millisecond))
 }
 
-func (j *Job) getArchives() map[string][]string {
+func (j *Job) processArchive(folder, archive string) (string, int64, []string, time.Duration, error) {
+	file := &xtractr.XFile{
+		FilePath:   archive,           // Path to archive being extracted.
+		OutputDir:  j.Output,          // Folder to extract archive into.
+		FileMode:   j.FileMode.Mode(), // Write files with this mode.
+		DirMode:    j.DirMode.Mode(),  // Write folders with this mode.
+		Passwords:  j.Passwords,       // (RAR/7zip) Archive password(s).
+		SquashRoot: j.SquashRoot,      // Remove single root folder?
+	}
+	file.SetLogger(j)
+
+	// If preserving the file hierarchy: set the output directory to the same path as the input file.
+	if j.Preserve {
+		// Remove input path prefix from fileName,
+		// append fileName.Dir to job.Output,
+		// extract file into job.Output/file(sub)Folder(s).
+		file.OutputDir = filepath.Join(j.Output, filepath.Dir(strings.TrimPrefix(archive, folder)))
+	}
+
+	start := time.Now()
+
+	size, files, _, err := xtractr.ExtractFile(file)
+	if err != nil {
+		err = fmt.Errorf("archive: %s: %w", archive, err)
+	}
+
+	return file.OutputDir, size, files, time.Since(start), err
+}
+
+func (j *Job) getArchives() xtractr.ArchiveList {
 	archives := map[string][]string{}
 
 	for _, fileName := range j.Paths {
@@ -87,13 +103,14 @@ func (j *Job) getArchives() map[string][]string {
 			exclude = xtractr.AllExcept(j.Include...)
 		}
 
-		for folder, fileList := range xtractr.FindCompressedFiles(xtractr.Filter{
+		for _, fileList := range xtractr.FindCompressedFiles(xtractr.Filter{
 			Path:          fileName,
 			ExcludeSuffix: exclude,
 			MaxDepth:      int(j.MaxDepth),
 			MinDepth:      int(j.MinDepth),
 		}) {
-			archives[folder] = fileList
+			// Group archive lists by the parent search folder that found them.
+			archives[fileName] = append(archives[fileName], fileList...)
 		}
 	}
 

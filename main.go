@@ -32,6 +32,7 @@ func parseFlags(pwd string) (*xt.Job, *flags) {
 	flag.StringSliceVarP(&job.Passwords, "password", "P", nil, "Attempt these passwords for rar and 7zip archives.")
 	flag.BoolVarP(&job.SquashRoot, "squash-root", "S", false,
 		"If archive contains only 1 folder at in the root, its contents are moved into output folder.")
+	flag.BoolVarP(&job.Verbose, "verbose", "V", false, "Verbose output prints the file list that was extracted.")
 	flag.BoolVarP(&job.DebugLog, "debug", "D", false, "Enable debug output.")
 	flag.StringSliceVarP(&flags.JobFiles, "job-file", "j", nil, "Read additional extraction jobs from these files.")
 	flag.BoolVarP(&job.Preserve, "preserve-paths", "p", false, "Recreate directory hierarchy while extracting.")
