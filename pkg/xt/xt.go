@@ -4,6 +4,7 @@ package xt
 import (
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -43,6 +44,12 @@ func Extract(job *Job) {
 			file.SetLogger(job)
 
 			start := time.Now()
+
+			// If preserving the file hierarchy, set the output directory to the
+			// folder of the archive being extracted.
+			if job.Preserve {
+				file.OutputDir = filepath.Dir(fileName)
+			}
 
 			size, files, _, err := xtractr.ExtractFile(file)
 			if err != nil {

@@ -20,6 +20,7 @@ type Job struct {
 	FileMode   FileMode `json:"fileMode"      toml:"file_mode"      xml:"file_mode"      yaml:"fileMode"`
 	SquashRoot bool     `json:"squashRoot"    toml:"squash_root"    xml:"squash_root"    yaml:"squashRoot"`
 	DebugLog   bool     `json:"debugLog"      toml:"debug_log"      xml:"debug_log"      yaml:"debugLog"`
+  Preserve   bool     `json:"preservePaths" yaml:"preservePaths"  xml:"preserve_paths" toml:"preserve_paths"`
 }
 
 // ParseJobs checks for and reads more jobs in from 0 or more job files.

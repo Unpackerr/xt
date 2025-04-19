@@ -34,9 +34,8 @@ func parseFlags(pwd string) (*xt.Job, *flags) {
 		"If archive contains only 1 folder at in the root, its contents are moved into output folder.")
 	flag.BoolVarP(&job.DebugLog, "debug", "D", false, "Enable debug output.")
 	flag.StringSliceVarP(&flags.JobFiles, "job-file", "j", nil, "Read additional extraction jobs from these files.")
+	flag.BoolVarP(&job.Preserve, "preserve-paths", "p", false, "Recreate directory hierarchy while extracting.")
 	flag.Parse()
-	// Preserve paths?
-	// flag.BoolVarP(&job.Preserve, "preserve-paths", "", false, "Recreate directory hierarchy while extracting.")
 	// flag.UintVarP(&job.Recurse, "recurse", "r", 0, "Extract archives inside archives, up to this depth.")
 
 	job.Paths = flag.Args()
