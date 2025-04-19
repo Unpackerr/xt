@@ -1,37 +1,16 @@
-run:
-  timeout: 3m
-
-output:
-  sort-results: true
-
+version: "2"
 linters:
-  enable-all: true
+  default: all
   disable:
-    # deprecated
-    - maligned
-    - scopelint
-    - interfacer
-    - golint
-    - exhaustivestruct
-    - nosnakecase
-    - structcheck
-    - deadcode
-    - varcheck
-    - ifshort
-    # unused
-    - nlreturn
-    - exhaustruct
     - depguard
-    - tagalign
-
+    - exhaustruct
+    - nlreturn
 issues:
-  # disable the default limit so we see everything
-  max-same-issues: 0
   max-issues-per-linter: 0
-  exclude-rules:
-    # Exclude some linters from testing files.
-    - linters:
-        - goconst
-        - wsl
-        - funlen
-      path: '.+_test.go'
+  max-same-issues: 0
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports

@@ -8,7 +8,7 @@ import (
 )
 
 // FileMode is used to unmarshal a unix file mode from the config file.
-type FileMode os.FileMode
+type FileMode os.FileMode //nolint:recvcheck // it works this way...
 
 // UnmarshalText turns a unix file mode, wrapped in quotes or not, into a usable os.FileMode.
 func (f *FileMode) UnmarshalText(text []byte) error {

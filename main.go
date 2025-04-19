@@ -23,13 +23,16 @@ func parseFlags(pwd string) (*xt.Job, *flags) {
 	job := &xt.Job{}
 	flags := &flags{}
 
-	flag.BoolVarP(&flags.PrintVer, "version", "v", false, "Print application version and exit")
+	flag.BoolVarP(&flags.PrintVer, "version", "v", false, "Print application version, and supported extensions.")
 	// These cli options create 1 job. Using job files creates N jobs.
-	flag.StringVarP(&job.Output, "output", "o", pwd, "Output directory, default is current directory")
-	flag.UintVarP(&job.MaxDepth, "max-depth", "d", 0, "Maximum folder depth to recursively search for archives.")
-	flag.UintVarP(&job.MinDepth, "min-depth", "m", 0, "Minimum folder depth to recursively search for archives.")
+	flag.StringVarP(&job.Output, "output", "o", pwd, "Output directory, default is current directory.")
+	flag.Uint16VarP(&job.MaxDepth, "max-depth", "d", 0, "Maximum folder depth to recursively search for archives.")
+	flag.Uint16VarP(&job.MinDepth, "min-depth", "m", 0, "Minimum folder depth to recursively search for archives.")
 	flag.StringSliceVarP(&job.Include, "extension", "e", nil, "Only extract files with these extensions.")
 	flag.StringSliceVarP(&job.Passwords, "password", "P", nil, "Attempt these passwords for rar and 7zip archives.")
+	flag.BoolVarP(&job.SquashRoot, "squash-root", "S", false,
+		"If archive contains only 1 folder at in the root, its contents are moved into output folder.")
+	flag.BoolVarP(&job.DebugLog, "debug", "D", false, "Enable debug output.")
 	flag.StringSliceVarP(&flags.JobFiles, "job-file", "j", nil, "Read additional extraction jobs from these files.")
 	flag.Parse()
 	// Preserve paths?
