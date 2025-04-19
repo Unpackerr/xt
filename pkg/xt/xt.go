@@ -22,49 +22,63 @@ func Extract(job *Job) {
 
 	total := 0
 	count := 0
+	size := int64(0)
+	fCount := 0
+	start := time.Now()
 
 	for _, files := range archives {
 		total += len(files)
 	}
 
-	for _, files := range archives {
-		for _, fileName := range files {
-			count++
-			log.Printf("==> Extracting Archive (%d/%d): %s", count, total, fileName)
+	for folder, files := range archives {
+		count++
+		for _, archiveName := range files {
+			log.Printf("==> Extracting Archive (%d/%d): %s", count, total, archiveName)
 
-			file := &xtractr.XFile{
-				FilePath:   fileName,            // Path to archive being extracted.
-				OutputDir:  job.Output,          // Folder to extract archive into.
-				FileMode:   job.FileMode.Mode(), // Write files with this mode.
-				DirMode:    job.DirMode.Mode(),  // Write folders with this mode.
-				Passwords:  job.Passwords,       // (RAR/7zip) Archive password(s).
-				SquashRoot: job.SquashRoot,      // Remove single root folder?
-			}
-
-			file.SetLogger(job)
-
-			start := time.Now()
-
-			// If preserving the file hierarchy, set the output directory to the
-			// folder of the archive being extracted.
-			if job.Preserve {
-				file.OutputDir = filepath.Dir(fileName)
-			}
-
-			size, files, _, err := xtractr.ExtractFile(file)
-			if err != nil {
-				log.Printf("[ERROR] Archive: %s: %v", fileName, err)
-				continue
-			}
+			fSize, files, duration := job.processArchive(folder, archiveName)
+			size += fSize
+			fCount += len(files)
 
 			log.Printf("==> Extracted Archive %s in %v: bytes: %d, files: %d",
-				fileName, time.Since(start).Round(time.Millisecond), size, len(files))
+				archiveName, duration.Round(time.Millisecond), size, len(files))
 
 			if len(files) > 0 {
 				log.Printf("==> Files:\n - %s", strings.Join(files, "\n - "))
 			}
 		}
 	}
+
+	log.Printf("==> Done.\n==> Extracted %d archives; wrote %d files totalling %d bytes in %v",
+		total, fCount, size, time.Since(start).Round(time.Millisecond))
+}
+
+func (j *Job) processArchive(folder, archiveName string) (int64, []string, time.Duration) {
+	file := &xtractr.XFile{
+		FilePath:   archiveName,       // Path to archive being extracted.
+		OutputDir:  j.Output,          // Folder to extract archive into.
+		FileMode:   j.FileMode.Mode(), // Write files with this mode.
+		DirMode:    j.DirMode.Mode(),  // Write folders with this mode.
+		Passwords:  j.Passwords,       // (RAR/7zip) Archive password(s).
+		SquashRoot: j.SquashRoot,      // Remove single root folder?
+	}
+	file.SetLogger(j)
+
+	// If preserving the file hierarchy: set the output directory to the same path as the input file.
+	if j.Preserve {
+		// Remove input path prefix from fileName,
+		// append fileName.Dir to job.Output,
+		// extract file into job.Output/file(sub)Folder(s).
+		file.OutputDir = filepath.Join(j.Output, filepath.Dir(strings.TrimPrefix(folder, archiveName)))
+	}
+
+	start := time.Now()
+
+	size, files, _, err := xtractr.ExtractFile(file)
+	if err != nil {
+		log.Printf("[ERROR] Archive: %s: %v", archiveName, err)
+	}
+
+	return size, files, time.Since(start)
 }
 
 func (j *Job) getArchives() map[string][]string {
