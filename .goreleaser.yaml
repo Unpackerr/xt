@@ -5,7 +5,7 @@ before:
     - go mod tidy
     - go generate ./...
     ## This creates MANUAL and MANUAL.html. The gzip then makes MANUAL.gz (a man page).
-    - go run github.com/davidnewhall/md2roff@v0.0.1 --manual xt --version "{{.Version}}" --date "{{.Date}}" MANUAL.md
+    - go run github.com/davidnewhall/md2roff@v0.0.1 --manual xt --version "{{.Version}}-{{.Env.REVISION}}" --date "{{.Date}}" MANUAL.md
     - rm -f MANUAL.gz
     - gzip -9 MANUAL
 
@@ -30,7 +30,7 @@ builds:
       - -X "golift.io/version.BuildDate={{.Date}}"
       - -X "golift.io/version.BuildUser={{.Env.USER}}"
       - -X "golift.io/version.Revision={{.Env.REVISION}}"
-      - -X "golift.io/version.Branch={{.Branch}} ({{.ShortCommit}})"
+      - -X "golift.io/version.Branch={{.ShortCommit}} [{{.Branch}}]"
     ignore:
       - goos: windows
         goarch: arm
