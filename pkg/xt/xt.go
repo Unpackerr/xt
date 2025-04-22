@@ -57,7 +57,7 @@ func Extract(job *Job) {
 }
 
 func (j *Job) setupProgress() {
-	every := float64(5)
+	every := float64(5) //nolint:mnd
 
 	isTerm := term.IsTerminal(int(os.Stdout.Fd()))
 	if isTerm {
