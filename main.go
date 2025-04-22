@@ -57,6 +57,8 @@ func main() {
 		pwd = "."
 	}
 
+	log.SetOutput(os.Stdout)
+
 	// Get 1 job and other flag info from cli args.
 	cliJob, flags := parseFlags(pwd)
 	flags.printVer()
