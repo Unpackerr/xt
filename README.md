@@ -1,4 +1,4 @@
-# eXtractor Tool
+<img src="https://raw.githubusercontent.com/wiki/Unpackerr/xt/images/xt-text.png" alt="eXtractor Tool">
 
 Extract Everything. Decompress entire folders filled with archives.
 
