@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/term"
 	"golift.io/xtractr"
 )
 
@@ -20,10 +21,11 @@ func Extract(job *Job) {
 	}
 
 	job.fixModes()
+	job.setupProgress()
 
 	total := archives.Count()
 	count := 0
-	size := int64(0)
+	size := uint64(0)
 	fCount := 0
 	start := time.Now()
 
@@ -54,7 +56,21 @@ func Extract(job *Job) {
 		total, size, fCount, time.Since(start).Round(time.Millisecond))
 }
 
-func (j *Job) processArchive(folder, archive string) (string, int64, []string, time.Duration, error) {
+func (j *Job) setupProgress() {
+	every := float64(5) //nolint:mnd
+
+	isTerm := term.IsTerminal(int(os.Stdout.Fd()))
+	if isTerm {
+		every = 0.1
+	}
+
+	if !j.DebugLog { // Only print progress if debug is off.
+		j.progress = make(chan xtractr.Progress)
+		go xtractr.ArchiveProgress(every, j.progress, term.IsTerminal(int(os.Stdout.Fd())), false)
+	}
+}
+
+func (j *Job) processArchive(folder, archive string) (string, uint64, []string, time.Duration, error) {
 	file := &xtractr.XFile{
 		FilePath:   archive,           // Path to archive being extracted.
 		OutputDir:  j.Output,          // Folder to extract archive into.
@@ -62,6 +78,7 @@ func (j *Job) processArchive(folder, archive string) (string, int64, []string, t
 		DirMode:    j.DirMode.Mode(),  // Write folders with this mode.
 		Passwords:  j.Passwords,       // (RAR/7zip) Archive password(s).
 		SquashRoot: j.SquashRoot,      // Remove single root folder?
+		Updates:    j.progress,
 	}
 	file.SetLogger(j)
 

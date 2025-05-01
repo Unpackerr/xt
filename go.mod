@@ -6,8 +6,9 @@ toolchain go1.24.2
 
 require (
 	github.com/spf13/pflag v1.0.6
+	golang.org/x/term v0.31.0
 	golift.io/version v0.0.2
-	golift.io/xtractr v0.2.3-0.20250419170021-53bfe05970fe
+	golift.io/xtractr v0.2.3-0.20250422011648-dfd640da4ba1
 )
 
 require (
@@ -18,6 +19,7 @@ require (
 	github.com/sshaman1101/dcompress v0.0.0-20200109162717-50436a6332de // indirect
 	github.com/therootcompany/xz v1.0.1 // indirect
 	golang.org/x/crypto v0.37.0 // indirect
+	golang.org/x/sys v0.32.0 // indirect
 )
 
 require (
