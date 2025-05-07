@@ -7,7 +7,7 @@ toolchain go1.24.2
 require (
 	github.com/spf13/pflag v1.0.6
 	golift.io/version v0.0.2
-	golift.io/xtractr v0.2.3-0.20250419170021-53bfe05970fe
+	golift.io/xtractr v0.2.3-0.20250419171821-f69a7b0361b2
 )
 
 require (
