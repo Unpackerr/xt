@@ -17,7 +17,7 @@ jobs:
           fetch-depth: 0
       - name: Import GPG key
         id: import_gpg
-        uses: crazy-max/ghaction-import-gpg@v6
+        uses: crazy-max/ghaction-import-gpg@v7
         with:
           gpg_private_key: ${{ secrets.GPG_SIGNING_KEY }}
       - name: "Create GPG_SIGNING_KEY file"
