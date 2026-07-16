@@ -24,7 +24,7 @@ jobs:
         run: "echo '${{ secrets.GPG_SIGNING_KEY }}' > /tmp/key.gpg"
       - name: "Save Iteration in Revision"
         run: echo REVISION=$(git rev-list --count --all || echo 0) > $GITHUB_ENV
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: stable
           cache: true
