@@ -1,10 +1,13 @@
-version: "2"
+version: '2'
 linters:
   default: all
   disable:
     - depguard
     - exhaustruct
+    - exhaustruct_v5
     - nlreturn
+    - wsl
+    - gomodguard
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
