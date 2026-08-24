@@ -9,15 +9,15 @@ jobs:
         os: [ubuntu, macos]
     runs-on: ${{ matrix.os }}-latest
     steps:
-      - uses: actions/checkout@v4 
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
-          go-version: 'stable'
+          go-version-file: 'go.mod'
       - name: go-generate
         run: go generate ./...
       - name: go-test
         run: go test ./pkg/...
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v7
+        uses: golangci/golangci-lint-action@v9
         with:
-          version: 'v2.1'
+          version: 'v2.13'

@@ -12,7 +12,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Import GPG key
@@ -24,11 +24,11 @@ jobs:
         run: "echo '${{ secrets.GPG_SIGNING_KEY }}' > /tmp/key.gpg"
       - name: "Save Iteration in Revision"
         run: echo REVISION=$(git rev-list --count --all || echo 0) > $GITHUB_ENV
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
-          go-version: stable
+          go-version-file: 'go.mod'
           cache: true
-      - uses: goreleaser/goreleaser-action@v6
+      - uses: goreleaser/goreleaser-action@v7
         with:
           version: nightly
           args: release --clean

@@ -7,8 +7,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
+	"golang.org/x/term"
 	"golift.io/xtractr"
 )
 
@@ -22,8 +24,12 @@ func Extract(job *Job) {
 	job.fixModes()
 
 	total := archives.Count()
+
+	stopProgress := job.setupProgress(total)
+	defer stopProgress()
+
 	count := 0
-	size := int64(0)
+	size := uint64(0)
 	fCount := 0
 	start := time.Now()
 
@@ -54,7 +60,43 @@ func Extract(job *Job) {
 		total, size, fCount, time.Since(start).Round(time.Millisecond))
 }
 
-func (j *Job) processArchive(folder, archive string) (string, int64, []string, time.Duration, error) {
+// setupProgress starts a printer goroutine when progress output is useful.
+// The returned func closes the channel and waits for that goroutine to exit.
+func (j *Job) setupProgress(total int) func() {
+	const (
+		intervalTTY    = 0.1
+		intervalNonTTY = 5
+	)
+
+	if j.DebugLog || total < 1 {
+		return func() {}
+	}
+
+	every := float64(intervalNonTTY)
+	isTerm := term.IsTerminal(int(os.Stdout.Fd()))
+
+	if isTerm {
+		every = intervalTTY
+	}
+
+	j.progress = make(chan xtractr.Progress)
+	done := make(chan struct{})
+
+	go func() {
+		defer close(done)
+
+		xtractr.ArchiveProgress(every, j.progress, isTerm, false)
+	}()
+
+	return sync.OnceFunc(func() {
+		close(j.progress)
+		<-done
+
+		j.progress = nil
+	})
+}
+
+func (j *Job) processArchive(folder, archive string) (string, uint64, []string, time.Duration, error) {
 	file := &xtractr.XFile{
 		FilePath:   archive,           // Path to archive being extracted.
 		OutputDir:  j.Output,          // Folder to extract archive into.
@@ -62,6 +104,7 @@ func (j *Job) processArchive(folder, archive string) (string, int64, []string, t
 		DirMode:    j.DirMode.Mode(),  // Write folders with this mode.
 		Passwords:  j.Passwords,       // (RAR/7zip) Archive password(s).
 		SquashRoot: j.SquashRoot,      // Remove single root folder?
+		Updates:    j.progress,
 	}
 	file.SetLogger(j)
 

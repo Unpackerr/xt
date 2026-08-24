@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"golift.io/cnfgfile"
+	"golift.io/xtractr"
 )
 
 // Job defines the input data for one extraction run.
@@ -22,6 +23,7 @@ type Job struct {
 	DebugLog   bool     `json:"debugLog"      toml:"debug_log"      xml:"debug_log"      yaml:"debugLog"`
 	Preserve   bool     `json:"preservePaths" toml:"preserve_paths" xml:"preserve_paths" yaml:"preservePaths"`
 	Verbose    bool     `json:"verbose"       toml:"verbose"        xml:"verbose"        yaml:"verbose"`
+	progress   chan xtractr.Progress
 }
 
 // ParseJobs checks for and reads more jobs in from 0 or more job files.
