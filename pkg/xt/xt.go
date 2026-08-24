@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"golang.org/x/term"
@@ -21,9 +22,12 @@ func Extract(job *Job) {
 	}
 
 	job.fixModes()
-	job.setupProgress()
 
 	total := archives.Count()
+
+	stopProgress := job.setupProgress(total)
+	defer stopProgress()
+
 	count := 0
 	size := uint64(0)
 	fCount := 0
@@ -56,18 +60,40 @@ func Extract(job *Job) {
 		total, size, fCount, time.Since(start).Round(time.Millisecond))
 }
 
-func (j *Job) setupProgress() {
-	every := float64(5) //nolint:mnd
+// setupProgress starts a printer goroutine when progress output is useful.
+// The returned func closes the channel and waits for that goroutine to exit.
+func (j *Job) setupProgress(total int) func() {
+	const (
+		intervalTTY    = 0.1
+		intervalNonTTY = 5
+	)
 
+	if j.DebugLog || total < 1 {
+		return func() {}
+	}
+
+	every := float64(intervalNonTTY)
 	isTerm := term.IsTerminal(int(os.Stdout.Fd()))
+
 	if isTerm {
-		every = 0.1
+		every = intervalTTY
 	}
 
-	if !j.DebugLog { // Only print progress if debug is off.
-		j.progress = make(chan xtractr.Progress)
-		go xtractr.ArchiveProgress(every, j.progress, term.IsTerminal(int(os.Stdout.Fd())), false)
-	}
+	j.progress = make(chan xtractr.Progress)
+	done := make(chan struct{})
+
+	go func() {
+		defer close(done)
+
+		xtractr.ArchiveProgress(every, j.progress, isTerm, false)
+	}()
+
+	return sync.OnceFunc(func() {
+		close(j.progress)
+		<-done
+
+		j.progress = nil
+	})
 }
 
 func (j *Job) processArchive(folder, archive string) (string, uint64, []string, time.Duration, error) {
