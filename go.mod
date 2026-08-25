@@ -1,4 +1,4 @@
-module github.com/Unpackerr/xt
+module golift.io/xt
 
 go 1.27.0
 
