@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
 version: 2
 
 before:
@@ -10,7 +11,8 @@ before:
     - gzip -9 MANUAL
 
 builds:
-  - env:
+  - id: xt
+    env:
       - CGO_ENABLED=0
       - CGO_LDFLAGS=-mmacosx-version-min=10.8
       - CGO_CFLAGS=-mmacosx-version-min=10.8
@@ -38,9 +40,31 @@ builds:
         goarch: arm
       - goos: darwin
         goarch: '386'
+    hooks:
+      post:
+        - cmd: bash init/windows/signexe.sh "{{ .Path }}"
+          if: '{{ eq .Os "windows" }}'
 
 universal_binaries:
-  - replace: true
+  - id: xt
+    replace: true
+
+# Sign + notarize the macOS universal binary (quill; works on Linux CI).
+# Enabled only when MACOS_SIGN_P12 is set so local snapshots still work.
+notarize:
+  macos:
+    - enabled: '{{ isEnvSet "MACOS_SIGN_P12" }}'
+      ids:
+        - xt
+      sign:
+        certificate: "{{ .Env.MACOS_SIGN_P12 }}"
+        password: "{{ .Env.MACOS_SIGN_PASSWORD }}"
+      notarize:
+        issuer_id: "{{ .Env.MACOS_NOTARY_ISSUER_ID }}"
+        key_id: "{{ .Env.MACOS_NOTARY_KEY_ID }}"
+        key: "{{ .Env.MACOS_NOTARY_KEY }}"
+        wait: true
+        timeout: 20m
 
 archives:
   - formats: ['tar.gz']
