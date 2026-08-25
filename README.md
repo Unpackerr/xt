@@ -45,9 +45,7 @@ brew install golift/mugs/xt
 - After you [install go](https://go.dev/doc/install), install the `xt` app using `go install`:
 
 ```shell
-cd /tmp
-go get github.com/Unpackerr/xt
-go install github.com/Unpackerr/xt
+go install golift.io/xt@latest
 ```
 
 [releases]: https://github.com/Unpackerr/xt/releases

@@ -110,10 +110,14 @@ func (j *Job) processArchive(folder, archive string) (string, uint64, []string, 
 
 	// If preserving the file hierarchy: set the output directory to the same path as the input file.
 	if j.Preserve {
-		// Remove input path prefix from fileName,
-		// append fileName.Dir to job.Output,
-		// extract file into job.Output/file(sub)Folder(s).
-		file.OutputDir = filepath.Join(j.Output, filepath.Dir(strings.TrimPrefix(archive, folder)))
+		// Rel(search folder, archive) then join that directory onto job.Output.
+		// TrimPrefix leaves a leading separator, and Join treats that as absolute.
+		rel, err := filepath.Rel(folder, archive)
+		if err != nil {
+			rel = strings.TrimPrefix(archive, folder)
+		}
+
+		file.OutputDir = filepath.Join(j.Output, filepath.Dir(rel))
 	}
 
 	start := time.Now()
