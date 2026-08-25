@@ -6,9 +6,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/Unpackerr/xt/pkg/xt"
 	flag "github.com/spf13/pflag"
 	"golift.io/version"
+	"golift.io/xt/pkg/xt"
 	"golift.io/xtractr"
 )
 
