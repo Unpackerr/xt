@@ -42,7 +42,7 @@ OPTIONS
 
 -P _password_, --password _password_  
     Provided _passwords_ are attempted against extraction of encrypted
-    rar and/or 7zip archives. The `-p` option may be provided many times.
+    rar and/or 7zip archives. The `-P` option may be provided many times.
 
 -e _.ext_, --extension _.ext_  
     Only extract archives with these extensions. Include the leading dot.
@@ -57,8 +57,9 @@ OPTIONS
     xml, json, toml and yaml. TOML is the default. See JOB FILES below.
 
 -p, --preserve-paths
-    This option determines if the archives will be extracted to their
-    parent folder. Using this flag will override the --output option.
+    Recreate the input directory hierarchy under the output directory.
+    Archives found in subfolders are extracted into matching subfolders
+    of --output. The --output option is still used as the base path.
 
 -V, --verbose
     Verbose logging prints the extracted file paths.

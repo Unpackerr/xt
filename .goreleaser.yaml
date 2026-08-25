@@ -108,7 +108,7 @@ brews:
     description: "eXtractor Tool - Recursively decompress archives"
     license: MIT
     url_template: "https://github.com/Unpackerr/xt/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
-    test: assert_match "xt v#{version}", shell_output("#{bin}/xt -v 2>&1", 2)
+    test: assert_match "xt v#{version}", shell_output("#{bin}/xt -v 2>&1", 0)
     install: bin.install "xt"
 
 changelog:
