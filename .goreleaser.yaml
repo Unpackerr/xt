@@ -68,7 +68,8 @@ notarize:
 
 archives:
   - formats: ['tar.gz']
-    wrap_in_directory: true
+    # Flat so the Homebrew cask can find the binary without a rename.
+    wrap_in_directory: false
     files:
      - src: MANUAL.html
        dst: xt-manual.html
@@ -114,10 +115,10 @@ nfpms:
 signs:
     - artifacts: all
 
-brews:
+homebrew_casks:
   - name: xt
-    # enable the line below only for testing locally
-    #skip_upload: true
+    binaries:
+      - xt
     repository:
       owner: golift
       name: homebrew-mugs
@@ -126,14 +127,14 @@ brews:
     commit_author:
       name: goreleaserbot
       email: bot@goreleaser.com
-    commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
-    directory: Formula
+    commit_msg_template: "Brew cask update for {{ .ProjectName }} version {{ .Tag }}"
+    directory: Casks
     homepage: https://unpackerr.com/
     description: "eXtractor Tool - Recursively decompress archives"
     license: MIT
-    url_template: "https://github.com/Unpackerr/xt/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
-    test: assert_match "xt v#{version}", shell_output("#{bin}/xt -v 2>&1", 0)
-    install: bin.install "xt"
+    url:
+      template: "https://github.com/Unpackerr/xt/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+      verified: github.com/Unpackerr/xt
 
 changelog:
   sort: asc
