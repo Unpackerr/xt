@@ -14,7 +14,7 @@ If you use **Alpine** or **Arch**, you can find a package for your OS on the [re
 
 Running the following script will install the GoLift package repo (using packagecloud.io).
 This only works on Debian/Ubuntu and RedHat/Fedora Linux.
-This is the recommend installation method for all users.
+This is the recommended installation method for all users.
 
 ```shell
 curl -s https://golift.io/repo.sh | sudo bash -s - xt

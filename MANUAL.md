@@ -5,7 +5,7 @@ SYNOPSIS
 ---
 
 `xt [options] [path [path] [path] ...]`  
-`xt --job-file /tmp/job1 -j /tmp/job2`\
+`xt --job-file /tmp/job1 -j /tmp/job2`
 
 DESCRIPTION
 ---
@@ -20,7 +20,7 @@ DESCRIPTION
 OPTIONS
 ---
 
-`xt [-o </dir>] [-d <#>] [-m <#>] [-e <.ext>] [-P <p4ss,words>] [-p] [paths]`
+`xt [-o </dir>] [-S] [-d <#>] [-m <#>] [-e <.ext>] [-P <password>] [-j <file>] [-p] [-V] [-D] [-v] [-h] [paths]`
 
 -o _directory_, --output _directory_  
     Provide a file system _directory_ where content is written.
@@ -47,7 +47,7 @@ OPTIONS
 -e _.ext_, --extension _.ext_  
     Only extract archives with these extensions. Include the leading dot.
     The `-e` option may be provided many times. 
-    Use `-v` for supported extensions. <- Your input must match the
+    Use `-v` for supported extensions. Your input must match the
     supported extensions. Unknown extensions are still ignored.
 
 -j _file_, --job-file _file_  
@@ -68,7 +68,7 @@ OPTIONS
     Enable debug output.
 
 -v, --version  
-    Display version and exit.
+    Display version, print supported extensions, and exit.
 
 -h, --help  
     Display usage and exit.
@@ -89,8 +89,9 @@ Example TOML job file:
     min_depth = 1
     file_mode = 644
     dir_mode  = 755
+    squash_root = false
     verbose   = false
-    debug     = false
+    debug_log = false
     preserve_paths = false
 
 AUTHOR
