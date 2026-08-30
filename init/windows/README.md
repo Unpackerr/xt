@@ -1,9 +1,6 @@
-If your app is used on windows, change this icon. You should also set the app name in the manifest.xml file.
-I used this website to make a 64x64 icon: https://icoconvert.com
-This icon belongs to the application (file), not the tray icon.
+Windows file icon (Explorer / exe Properties), not a tray icon.
 
-GoReleaser embeds icon, manifest, and VERSIONINFO via goversioninfo
-(`resource_windows_*.syso`). Explorer File version is the `x.y.z` prefix of
-the release version plus `REVISION`. Product version is the release version
-string. Do not use GoReleaser `.RawVersion` here: on `--nightly` it stays on
-the last tag while `.Version` is already rewritten.
+`application.ico` is a multi-size ICO (16, 24, 32, 48, 64, 128, 256) of the
+circular XT emblem from the repo wordmark. `application-256.png` is the same
+art as a square PNG with a transparent background. GoReleaser embeds the ico
+via goversioninfo.
