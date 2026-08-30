@@ -9,14 +9,13 @@ before:
     - go run github.com/davidnewhall/md2roff@v0.0.1 --manual xt --version "{{.Version}}-{{.Env.REVISION}}" --date "{{.Date}}" MANUAL.md
     - rm -f MANUAL.gz
     - gzip -9 MANUAL
-    # Icon + manifest + VERSIONINFO (Explorer File version). -platform-specific:
-    # Windows is amd64/386/arm64; a single amd64 .syso would miss the others.
-    # FileVersion is the x.y.z prefix of .Version plus REVISION (not .RawVersion:
-    # that stays on the last tag if --nightly is ever used). ProductVersion is
-    # .Version. goversioninfo fills the numeric fields from the FileVersion string.
+    # Icon + manifest + VERSIONINFO. --platform-specific for amd64/386/arm64.
+    # Keep --skip-versioninfo=true on the go run line so YAML/Copilot cannot
+    # treat it as a list item. versioninfo.json is the fallback if skip is
+    # dropped. FileVersion is .Version's x.y.z prefix plus REVISION.
+    # goversioninfo still downloads akavel/rsrc as a library to write the .syso.
     - >-
-      go run github.com/josephspurrier/goversioninfo/cmd/goversioninfo@v1.7.0
-      -platform-specific
+      go run github.com/josephspurrier/goversioninfo/cmd/goversioninfo@v1.7.0 --platform-specific=true --skip-versioninfo=true
       -icon init/windows/application.ico
       -manifest init/windows/manifest.xml
       -company "Go Lift"
@@ -29,6 +28,7 @@ before:
       -product-version "{{ .Version }}"
       -translation 1033
       -charset 1200
+      init/windows/versioninfo.json
 
 builds:
   - id: xt
