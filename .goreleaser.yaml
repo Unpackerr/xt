@@ -16,7 +16,7 @@ before:
     # .Version. goversioninfo fills the numeric fields from the FileVersion string.
     - >-
       go run github.com/josephspurrier/goversioninfo/cmd/goversioninfo@v1.7.0
-      -platform-specific -skip-versioninfo
+      -platform-specific
       -icon init/windows/application.ico
       -manifest init/windows/manifest.xml
       -company "Go Lift"
