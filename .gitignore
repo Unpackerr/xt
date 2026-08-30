@@ -5,3 +5,5 @@
 /MANUAL.html
 /MANUAL.gz
 /o/
+/rsrc*.syso
+/resource_windows_*.syso
