@@ -7,7 +7,7 @@ require (
 	golang.org/x/term v0.45.0
 	golift.io/cnfgfile v0.0.0-20240713024420-a5436d84eb48
 	golift.io/version v0.0.2
-	golift.io/xtractr v0.5.0
+	golift.io/xtractr v0.5.1
 )
 
 require (
