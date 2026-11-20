@@ -10,7 +10,12 @@ SYNOPSIS
 DESCRIPTION
 ---
 
-*   This application recursively extracts compressed archives.
+*   Provide a folder and xt searches it and every sub folder for archives.
+    `--max-depth` and `--min-depth` limit that search. `--recurse` is not used for it.
+*   An archive inside an archive is left packed. `--recurse` extracts those once,
+    in a second pass, and that pass does not repeat.
+    Example: pass 1 extracts `bundle.zip` and writes `disc.img.zst`;
+    pass 2 extracts that and writes `disc.img`; `disc.img` stays packed until you run xt on it.
 *   Provide directories to search or provide files to extract.
 *   Supports: ZIP, RAR, GZIP, BZIP2, TAR, TGZ, TBZ2, 7ZIP, ISO9660
 *   Supports: Z, AR, BR, CPIO, DEB, LZ/4, LZIP, LZMA2, S2, SNAPPY
@@ -20,7 +25,7 @@ DESCRIPTION
 OPTIONS
 ---
 
-`xt [-o </dir>] [-S] [-d <#>] [-m <#>] [-e <.ext>] [-P <password>] [-j <file>] [-p] [-V] [-D] [-v] [-h] [paths]`
+`xt [-o </dir>] [-r] [-S] [-d <#>] [-m <#>] [-e <.ext>] [-P <password>] [-j <file>] [-p] [-V] [-D] [-v] [-h] [paths]`
 
 -o _directory_, --output _directory_  
     Provide a file system _directory_ where content is written.
@@ -31,9 +36,18 @@ OPTIONS
     then the contents of that folder are moved into the output folder.
     The now-empty original root folder is deleted.
 
+-r, --recurse
+    Extract archives that the extraction just wrote. This is one extra pass,
+    and it does not repeat. A folder you pass is always searched, including
+    its sub folders; `--recurse` is not that search.
+    Example: pass 1 extracts `bundle.zip` and writes `disc.img.zst`;
+    pass 2 extracts that and writes `disc.img`; `disc.img` stays packed
+    until you run xt on it.
+
 -d _count_, --max-depth _count_  
-    This option limits how deep into the file system xt recurses.
-    The default is (0) unlimited. Setting to 1 disables recursion.
+    This option limits how deep into the file system xt searches.
+    The default is (0) unlimited. 1 searches the given path and one level
+    of sub folders.
 
 -m _count_, --min-depth _count_  
     This option determines if archives should only be found deeper
@@ -90,6 +104,7 @@ Example TOML job file:
     file_mode = 644
     dir_mode  = 755
     squash_root = false
+    recurse = false
     verbose   = false
     debug_log = false
     preserve_paths = false

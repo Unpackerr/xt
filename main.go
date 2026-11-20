@@ -14,8 +14,13 @@ import (
 
 func parseFlags(pwd string) (*xt.Job, *flags) {
 	flag.Usage = func() {
-		// XXX: Write more "help" info here.
-		fmt.Println("If you pass a directory, this app will extract every archive in it.")
+		fmt.Println("A folder is always searched, including its sub folders.")
+		fmt.Println("--max-depth and --min-depth limit that search. --recurse is not used for it.")
+		fmt.Println("--max-depth 1 searches the path and one level of sub folders. 0 is unlimited.")
+		fmt.Println("An archive inside an archive stays packed.")
+		fmt.Println("--recurse adds one second pass over what was just extracted, and it runs once.")
+		fmt.Println("Example: pass 1 extracts bundle.zip and writes disc.img.zst;")
+		fmt.Println("pass 2 extracts that and writes disc.img; disc.img stays packed.")
 		fmt.Printf("Usage: %s [-v] [--output <path>] <path> [paths...]\n", os.Args[0])
 		flag.PrintDefaults()
 		os.Exit(0)
@@ -26,7 +31,8 @@ func parseFlags(pwd string) (*xt.Job, *flags) {
 	flag.BoolVarP(&flags.PrintVer, "version", "v", false, "Print application version, and supported extensions.")
 	// These cli options create 1 job. Using job files creates N jobs.
 	flag.StringVarP(&job.Output, "output", "o", pwd, "Output directory, default is current directory.")
-	flag.Uint16VarP(&job.MaxDepth, "max-depth", "d", 0, "Maximum folder depth to recursively search for archives.")
+	flag.Uint16VarP(&job.MaxDepth, "max-depth", "d", 0,
+		"Folder search depth. 0 is unlimited. 1 searches the path and one level of sub folders.")
 	flag.Uint16VarP(&job.MinDepth, "min-depth", "m", 0, "Minimum folder depth to recursively search for archives.")
 	flag.StringSliceVarP(&job.Include, "extension", "e", nil, "Only extract files with these extensions.")
 	flag.StringSliceVarP(&job.Passwords, "password", "P", nil, "Attempt these passwords for rar and 7zip archives.")
@@ -36,8 +42,9 @@ func parseFlags(pwd string) (*xt.Job, *flags) {
 	flag.BoolVarP(&job.DebugLog, "debug", "D", false, "Enable debug output.")
 	flag.StringSliceVarP(&flags.JobFiles, "job-file", "j", nil, "Read additional extraction jobs from these files.")
 	flag.BoolVarP(&job.Preserve, "preserve-paths", "p", false, "Recreate directory hierarchy while extracting.")
+	flag.BoolVarP(&job.Recurse, "recurse", "r", false,
+		"One extra pass over archives just extracted. Not used for the folder search.")
 	flag.Parse()
-	// flag.UintVarP(&job.Recurse, "recurse", "r", 0, "Extract archives inside archives, up to this depth.")
 
 	job.Paths = flag.Args()
 

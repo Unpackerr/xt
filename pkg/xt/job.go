@@ -20,6 +20,7 @@ type Job struct {
 	DirMode    FileMode `json:"dirMode"       toml:"dir_mode"       xml:"dir_mode"       yaml:"dirMode"`
 	FileMode   FileMode `json:"fileMode"      toml:"file_mode"      xml:"file_mode"      yaml:"fileMode"`
 	SquashRoot bool     `json:"squashRoot"    toml:"squash_root"    xml:"squash_root"    yaml:"squashRoot"`
+	Recurse    bool     `json:"recurse"       toml:"recurse"        xml:"recurse"        yaml:"recurse"`
 	DebugLog   bool     `json:"debugLog"      toml:"debug_log"      xml:"debug_log"      yaml:"debugLog"`
 	Preserve   bool     `json:"preservePaths" toml:"preserve_paths" xml:"preserve_paths" yaml:"preservePaths"`
 	Verbose    bool     `json:"verbose"       toml:"verbose"        xml:"verbose"        yaml:"verbose"`
@@ -51,8 +52,9 @@ func (j *Job) String() string {
 		sSfx = "s"
 	}
 
-	return fmt.Sprintf("%d path%s, f/d-mode:%s/%s, min/max-depth: %d/%d, preserve/squash: %v/%v output: %s",
-		len(j.Paths), sSfx, j.FileMode, j.DirMode, j.MinDepth, j.MaxDepth, j.Preserve, j.SquashRoot, j.Output)
+	return fmt.Sprintf("%d path%s, f/d-mode:%s/%s, min/max-depth: %d/%d, preserve/squash/recurse: %v/%v/%v output: %s",
+		len(j.Paths), sSfx, j.FileMode, j.DirMode, j.MinDepth, j.MaxDepth,
+		j.Preserve, j.SquashRoot, j.Recurse, j.Output)
 }
 
 // Debugf prints a log message if debug is enabled.

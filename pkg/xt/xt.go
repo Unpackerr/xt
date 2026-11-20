@@ -31,6 +31,7 @@ func Extract(job *Job) {
 	count := 0
 	size := uint64(0)
 	fCount := 0
+	nested := 0
 	start := time.Now()
 
 	for folder, files := range archives {
@@ -38,7 +39,7 @@ func Extract(job *Job) {
 			count++
 			log.Printf("==> Extracting Archive (%d/%d): %s", count, total, archive)
 
-			output, fSize, files, duration, err := job.processArchive(folder, archive)
+			output, fSize, files, duration, extra, err := job.processArchive(folder, archive)
 			if err != nil {
 				log.Printf("[ERROR] Extracting: %v", err)
 			} else {
@@ -50,14 +51,28 @@ func Extract(job *Job) {
 				log.Printf("==> Files:\n - %s", strings.Join(files, "\n - "))
 			}
 
-			size += fSize
-			fCount += len(files)
+			size += fSize + extra.size
+			fCount += len(files) + extra.files
+			nested += extra.archives
 		}
 	}
 
 	log.Printf("==> Done.")
+	logExtracted(total, nested, size, fCount, time.Since(start))
+}
+
+func logExtracted(total, nested int, size uint64, files int, elapsed time.Duration) {
+	elapsed = elapsed.Round(time.Millisecond)
+
+	if nested > 0 {
+		log.Printf("==> Extracted %d archives (%d nested); wrote %d bytes into %d files in %v",
+			total+nested, nested, size, files, elapsed)
+
+		return
+	}
+
 	log.Printf("==> Extracted %d archives; wrote %d bytes into %d files in %v",
-		total, size, fCount, time.Since(start).Round(time.Millisecond))
+		total, size, files, elapsed)
 }
 
 // setupProgress starts a printer goroutine when progress output is useful.
@@ -96,7 +111,7 @@ func (j *Job) setupProgress(total int) func() {
 	})
 }
 
-func (j *Job) processArchive(folder, archive string) (string, uint64, []string, time.Duration, error) {
+func (j *Job) processArchive(folder, archive string) (string, uint64, []string, time.Duration, nestedStats, error) {
 	file := &xtractr.XFile{
 		FilePath:   archive,           // Path to archive being extracted.
 		OutputDir:  j.Output,          // Folder to extract archive into.
@@ -120,14 +135,34 @@ func (j *Job) processArchive(folder, archive string) (string, uint64, []string, 
 		file.OutputDir = filepath.Join(j.Output, filepath.Dir(rel))
 	}
 
+	// Absolute, so a second pass can tell a written path from a tar member
+	// name, and so squash works for a relative output folder.
+	absOutput, err := filepath.Abs(file.OutputDir)
+	if err != nil {
+		return "", 0, nil, 0, nestedStats{}, fmt.Errorf("output directory: %w", err)
+	}
+
+	file.OutputDir = absOutput
+
+	// Read once, and only when both flags are set. See preexistingNames.
+	var preexisting map[string]struct{}
+	if j.Recurse && j.SquashRoot {
+		preexisting = preexistingNames(file.OutputDir)
+	}
+
 	start := time.Now()
 
 	size, files, _, err := xtractr.ExtractFile(file)
 	if err != nil {
-		err = fmt.Errorf("archive: %s: %w", archive, err)
+		return file.OutputDir, size, files, time.Since(start), nestedStats{}, fmt.Errorf("archive: %s: %w", archive, err)
 	}
 
-	return file.OutputDir, size, files, time.Since(start), err
+	var nested nestedStats
+	if j.Recurse {
+		nested = j.extractNested(file.OutputDir, files, file.SkipOnRecursion, preexisting)
+	}
+
+	return file.OutputDir, size, files, time.Since(start), nested, nil
 }
 
 func (j *Job) getArchives() xtractr.ArchiveList {
