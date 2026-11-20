@@ -121,7 +121,7 @@ func TestGetArchivesIncludeExclude(t *testing.T) {
 	createTestZip(t, zipPath, "hello.txt", "hello")
 	writeFile(t, isoPath, "not-an-iso")
 
-	included := (&Job{Paths: []string{dir}, Include: []string{".zip"}}).getArchives()
+	included := (&Job{Paths: []string{dir}, Include: []string{zipSuffix}}).getArchives()
 	if included.Count() != 1 || !slices.Contains(included[dir], zipPath) {
 		t.Fatalf("include .zip = %#v", included)
 	}
@@ -130,7 +130,7 @@ func TestGetArchivesIncludeExclude(t *testing.T) {
 		t.Fatalf("include .zip should skip iso: %#v", included)
 	}
 
-	excluded := (&Job{Paths: []string{dir}, Exclude: []string{".zip"}}).getArchives()
+	excluded := (&Job{Paths: []string{dir}, Exclude: []string{zipSuffix}}).getArchives()
 	if slices.Contains(excluded[dir], zipPath) {
 		t.Fatalf("exclude .zip still found zip: %#v", excluded)
 	}
@@ -205,6 +205,8 @@ func TestExtractSquashRoot(t *testing.T) {
 		t.Fatalf("squash left root folder: %v", err)
 	}
 }
+
+const zipSuffix = ".zip"
 
 func createTestZip(t *testing.T, zipPath, name, body string) {
 	t.Helper()
